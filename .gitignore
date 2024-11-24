@@ -1,0 +1,7 @@
+logs
+tasks.json
+tasks.xml
+task_logs
+tasker.pl
+running_task.pid
+last_task.json
