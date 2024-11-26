@@ -6,7 +6,7 @@ use File::Path qw(make_path);
 use File::Basename qw(basename fileparse);
 use IO::Pipe;
 use Lopt::Constants;
-use Lopt::Persistence::PersisterFactory;
+use Lopt::Persistence::MongoPersister;
 
 sub new {
     my ($class, $id, $task, $pid) = @_;
@@ -14,7 +14,7 @@ sub new {
         id => $id,
         task => $task,
         pid => $pid,
-        persister => Lopt::Persistence::PersisterFactory::create(),
+        persister => Lopt::Persistence::MongoPersister->new(),
         log_dir => undef,
         log_filename => undef,
         log_fh => undef
@@ -83,13 +83,12 @@ sub execute {
     ($self->{log_dir}, $self->{log_filename}, $self->{log_fh}) = $self->create_logfile();
 
     my $exit_code = $self->execute_task();
-
     $self->persister()->save_last_task({ log_file => $self->log_filename(), exit_code => $exit_code });
     $self->persister()->save_execution($self->log_dir(), { log_file => './' . basename($self->log_filename()), exit_code => $exit_code });
 
     $self->log_fh()->close() 
         or die "Could not close file $self->log_filename: $!";
-    return;
+    return 1;
 }
 
 sub execute_task {

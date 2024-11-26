@@ -1,14 +1,14 @@
 package Lopt::Service::TaskRepository;
 
 use Dancer2 appname => 'Lopt';
-use Lopt::Persistence::PersisterFactory;
+use Lopt::Persistence::MongoPersister;
 
 use parent qw(Lopt::Service::CrudRepository);
 
 sub new {
     my ($class, $task_id, $task) = @_;
     my $self = {
-        persister => Lopt::Persistence::PersisterFactory::create($task_id, $task)
+        persister => Lopt::Persistence::MongoPersister->new($task_id, $task),
     };
     bless $self, $class;
 }
