@@ -5,7 +5,7 @@ use Lopt::Constants;
 
 sub new {
     my ($class, $data) = @_;
-    die "Error when initializing $class: the request was not a JSON" if !ref $data;
+    die "Error when initializing $class: the request was not a JSON formatted string" if !ref $data;
     my $self = {
         data => $data
     };
@@ -23,6 +23,7 @@ sub validate {
 sub validate_keys {
     my ($self, $data, $model) = @_;
     my $class = ref $self;
+
     foreach my $key (keys %{$model}) {
         if(!exists $data->{$key}) {
             # check if the required keys based on the model exist
@@ -60,6 +61,7 @@ sub validate_keys {
 sub validate_abstract_keys {
     my ($self, $data, $model)= @_;
     my $class = ref $self;
+
     foreach my $nested_key (keys %{$data}) {
         next if $nested_key eq $REQUEST_MODEL_NOT_ACTUAL_KEYS;
         my $key_regex = $model->{'key'};

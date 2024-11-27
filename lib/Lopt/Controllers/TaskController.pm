@@ -10,8 +10,6 @@ use Lopt::Validation;
 use Lopt::Execution::TaskExecution;
 
 prefix '/tasks' => sub {
-  # handlers for all tasks
-  # creating a task
   post '' => sub {
       debug 'Received ' . request->method . ' to ' . request->path;
       

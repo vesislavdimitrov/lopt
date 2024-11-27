@@ -1,0 +1,21 @@
+#!/bin/bash
+set -uo pipefail
+TESTS_SCRIPT_DIR=$(dirname "$(realpath "$0")")
+source "${TESTS_SCRIPT_DIR}/common.sh"
+
+# Check the base API
+if ! curl "${LOCAL_URL}" > /dev/null; then
+    echo -e "\n${RED}FAILED TO GET BASE API${NC}"
+    exit "${EXIT_CODE_FAILURE}"
+fi
+echo -e "\n${GREEN}BASE API TEST SUCCESSFUL${NC}"
+
+if ! source "${TESTS_SCRIPT_DIR}/test_scripts/users_test.sh"; then
+    echo -e "\n${RED}USER TESTS FAILED${NC}"
+    exit "${EXIT_CODE_FAILURE}"
+fi 
+
+if ! source "${TESTS_SCRIPT_DIR}/test_scripts/tasks_crud_test.sh"; then
+    echo -e "\n${RED}TASKS CRUD TESTS FAILED${NC}"
+    exit "${EXIT_CODE_FAILURE}"
+fi

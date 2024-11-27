@@ -8,8 +8,6 @@ use Lopt::Service::UserRepository;
 use Lopt::Validation;
 
 prefix '/users' => sub {
-    # handlers for users
-    # creating a user
     post '' => sub {
         debug 'Received ' . request->method . ' to ' . request->path;
       

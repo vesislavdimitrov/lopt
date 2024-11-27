@@ -15,7 +15,7 @@ sub new {
         };
         bless $self, $class;
     } else {
-        error "Invalid HTTP status code when generating an Exception";
+        error "Invalid HTTP status code passed when generating an Exception";
         return undef;
     }
 }
