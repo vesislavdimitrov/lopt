@@ -1,7 +1,7 @@
-package Lopt::Models::TaskExecutionModel;
+package Lopt::Model::TaskExecution;
 
 use Dancer2 appname => 'Lopt';
-use parent qw(Lopt::Models::RequestModel);
+use parent qw(Lopt::Model::Request);
 
 my $TASK_MODEL = {
     password => qr{\A.*\z}

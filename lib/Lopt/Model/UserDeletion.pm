@@ -1,12 +1,10 @@
-package Lopt::Models::UserModel;
+package Lopt::Model::UserDeletion;
 
 use Dancer2 appname => 'Lopt';
-use parent qw(Lopt::Models::RequestModel);
+use parent qw(Lopt::Model::Request);
 
 my $USER_MODEL = {
-    username => qr{^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$},
-    password => qr{\A.+\z},
-    uid => qr{\A\d*\z}
+    delete_home => qr{\A0|1\z}
 };
 
 sub new {

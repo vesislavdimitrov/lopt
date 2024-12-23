@@ -1,4 +1,4 @@
-package Lopt::Models::RequestModel;
+package Lopt::Model::Request;
 
 use Dancer2 appname => 'Lopt';
 use Lopt::Constants;

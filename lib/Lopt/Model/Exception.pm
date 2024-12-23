@@ -1,4 +1,4 @@
-package Lopt::Models::Exception;
+package Lopt::Model::Exception;
 
 use Dancer2 appname => 'Lopt';
 use Dancer2::Core::HTTP qw();

@@ -1,7 +1,7 @@
-package Lopt::Models::TaskModel;
+package Lopt::Model::Task;
 
 use Dancer2 appname => 'Lopt';
-use parent qw(Lopt::Models::RequestModel);
+use parent qw(Lopt::Model::Request);
 
 my $TASK_MODEL = {
     command => qr{\A.+\z},

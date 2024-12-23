@@ -1,9 +1,9 @@
 package Lopt::Controllers::UserController;
 
 use Dancer2 appname => 'Lopt';
-use Lopt::Models::UserModel;
-use Lopt::Models::UserDeletionModel;
-use Lopt::Models::Exception;
+use Lopt::Model::User;
+use Lopt::Model::UserDeletion;
+use Lopt::Model::Exception;
 use Lopt::Service::UserRepository;
 use Lopt::Validation;
 
@@ -12,7 +12,7 @@ prefix '/users' => sub {
         debug 'Received ' . request->method . ' to ' . request->path;
       
         my $posted_data = from_json(request->body);
-        my $user_model = Lopt::Models::UserModel->new($posted_data);
+        my $user_model = Lopt::Model::User->new($posted_data);
         if($user_model->check_validity()) {
             debug request->method . ' successful to ' . request->path;
             my $repository = Lopt::Service::UserRepository->new($user_model->data());
@@ -22,11 +22,11 @@ prefix '/users' => sub {
             }
             warning request->method . ' failed to ' . request->path;
             status 400;
-            return Lopt::Models::Exception->new(400, $repository->error_message())->get_hash();
+            return Lopt::Model::Exception->new(400, $repository->error_message())->get_hash();
         } else {
             warning request->method . ' failed to ' . request->path;
             status 400;
-            return Lopt::Models::Exception->new(400, $user_model->error_message())->get_hash();
+            return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
         }
     };
 
@@ -41,7 +41,7 @@ prefix '/users' => sub {
         } else {
             warning request->method . ' failed to ' . request->path;
             status 404;
-            return Lopt::Models::Exception->new(404, "No users created by Lopt found.")->get_hash();
+            return Lopt::Model::Exception->new(404, "No users created by Lopt found.")->get_hash();
         }
     };
 
@@ -51,18 +51,18 @@ prefix '/users' => sub {
 
         my $username = params->{username};
         my $posted_data = from_json(request->body);
-        my $user_model = Lopt::Models::UserDeletionModel->new($posted_data);
+        my $user_model = Lopt::Model::UserDeletion->new($posted_data);
         if($user_model->check_validity()) {
             debug request->method . ' successful to ' . request->path;
             my $repository = Lopt::Service::UserRepository->new($user_model->data(), $username);
             return status 204 if $repository->delete();
             warning request->method . ' failed to ' . request->path;
             status 400;
-            return Lopt::Models::Exception->new(400, $repository->error_message())->get_hash();
+            return Lopt::Model::Exception->new(400, $repository->error_message())->get_hash();
         } else {
             warning request->method . ' failed to ' . request->path;
             status 400;
-            return Lopt::Models::Exception->new(400, $user_model->error_message())->get_hash();
+            return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
         }
     };
 
@@ -71,7 +71,7 @@ prefix '/users' => sub {
         # methods not allowed
         warning 'Received a not allowed method ' . request->method . ' to ' . request->path;
         status 405;
-        return Lopt::Models::Exception->new(405, "Method " . request->method . " not allowed on " . request->path)->get_hash();
+        return Lopt::Model::Exception->new(405, "Method " . request->method . " not allowed on " . request->path)->get_hash();
     };
 };
 
