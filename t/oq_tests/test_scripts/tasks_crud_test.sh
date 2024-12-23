@@ -1,5 +1,6 @@
 #!/bin/bash
 set -uo pipefail
+
 TASKS_CRUD_SCRIPT_DIR=$(dirname "$(realpath "$0")")
 source "${TASKS_CRUD_SCRIPT_DIR}/common.sh"
 
@@ -21,8 +22,8 @@ new_task=$(curl -s -X POST "${LOCAL_URL}/tasks" \
 
 #===========================================================================================
 # Extract the generated task ID
-task_id=$(echo "$new_task" | grep -oP '"id":\s*"\K[^"]+')
-if [[ -z "$task_id" ]]; then
+task_id=$(echo "${new_task}" | grep -oP '"id":\s*"\K[^"]+')
+if [[ -z "${task_id}" ]]; then
     echo -e "\n${RED}FAILED TO CREATE TASK - NO ID RETURNED${NC}"
     exit "${EXIT_CODE_FAILURE}"
 fi

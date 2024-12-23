@@ -1,5 +1,6 @@
 #!/bin/bash
 set -uo pipefail
+
 USERS_TEST_SCRIPT_DIR=$(dirname "$(realpath "$0")")
 source "${USERS_TEST_SCRIPT_DIR}/common.sh"
 
