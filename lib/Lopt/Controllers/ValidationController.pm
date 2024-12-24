@@ -2,12 +2,15 @@ package Lopt::Controllers::ValidationController;
 
 use Dancer2 appname => 'Lopt';
 use Lopt::Validation;
+use Lopt::Controllers::Utils qw(
+    get_debug_message
+    get_warning_message
+    get_banned_method_message
+);
 
 prefix '/validation' => sub {
-    # validation handlers
-    # validating uids for user actions
     get '/users/uid/:uid' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
         my $uid = params->{uid};
         if(!validate_id($uid)) {
@@ -21,14 +24,12 @@ prefix '/validation' => sub {
         return status 204;
     };
 
-    # validating usernames for user actions
     prefix '/users/username' => sub {
         get '/:username' => sub {
-            debug 'Received ' . request->method . ' to ' . request->path;
+            debug(get_debug_message(request));
 
             my $username = params->{username};
-            my $repository = Lopt::Service::UserRepository->new();
-            my $users = $repository->fetch();
+            my $users = Lopt::Service::UserRepository->new()->fetch();
             my $escaped_username = quotemeta($username);
             my $username_exists = defined getpwnam($username);
             my $username_used = grep($_->{username} =~ /\A$escaped_username\z/, @{$users});
@@ -46,7 +47,7 @@ prefix '/validation' => sub {
         };
 
         get '/:username/nonexistent' => sub {
-            debug 'Received ' . request->method . ' to ' . request->path;
+            debug(get_debug_message(request));
 
             my $username = params->{username};
             if(defined getpwnam($username)) {
@@ -58,9 +59,8 @@ prefix '/validation' => sub {
         };
     };
 
-    # validating usernames for task actions
     get '/tasks/username/:username' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
         my $username = params->{username};
         if(!verify_username($username)) {
@@ -70,9 +70,8 @@ prefix '/validation' => sub {
         return status 204;
     };
 
-    # validating ids for task actions
     get '/tasks/id/:id' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
         my $id = params->{id};
         if(!validate_id($id)) {
@@ -92,10 +91,9 @@ prefix '/validation' => sub {
 
     # ban methods on /validation
     any ['post', 'put', 'patch', 'delete'] => '' => sub {
-        # methods not allowed
-        warning 'Received a not allowed method ' . request->method . ' to ' . request->path;
+        warning(get_banned_method_message(request));
         status 405;
-        return Lopt::Model::Exception->new(405, "Method " . request->method . " not allowed on " . request->path)->get_hash();
+        return Lopt::Model::Exception->new(405, warning(get_banned_method_message(request)))->get_hash();
     };
 };
 

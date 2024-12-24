@@ -6,72 +6,70 @@ use Lopt::Model::UserDeletion;
 use Lopt::Model::Exception;
 use Lopt::Service::UserRepository;
 use Lopt::Validation;
+use Lopt::Controllers::Utils qw(
+    get_debug_message
+    get_success_message
+    get_warning_message
+    get_banned_method_message
+);
 
 prefix '/users' => sub {
     post '' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
-      
-        my $posted_data = from_json(request->body);
-        my $user_model = Lopt::Model::User->new($posted_data);
+        debug(get_debug_message(request));
+
+        my $user_model = Lopt::Model::User->new(from_json(request->body));
         if($user_model->check_validity()) {
-            debug request->method . ' successful to ' . request->path;
+            debug(get_success_message(request));
+
             my $repository = Lopt::Service::UserRepository->new($user_model->data());
             if($repository->create()) {
                 status 201;
                 return;
             }
-            warning request->method . ' failed to ' . request->path;
+            warning(get_warning_message(request));
             status 400;
             return Lopt::Model::Exception->new(400, $repository->error_message())->get_hash();
-        } else {
-            warning request->method . ' failed to ' . request->path;
-            status 400;
-            return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
         }
+        warning(get_warning_message(request));
+        status 400;
+        return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
     };
 
-    # getting list of all users, created by Lopt
     get '' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
-        my $repository = Lopt::Service::UserRepository->new();
-        my $users = $repository->fetch();
-        if(@{$users} > 0) {
-            return $users;
-        } else {
-            warning request->method . ' failed to ' . request->path;
-            status 404;
-            return Lopt::Model::Exception->new(404, "No users created by Lopt found.")->get_hash();
-        }
+        my $users = Lopt::Service::UserRepository->new()->fetch();
+        return $users if @{$users} > 0;
+
+        warning(get_warning_message(request));
+        status 404;
+        return Lopt::Model::Exception->new(404, "No users created by Lopt found.")->get_hash();
     };
 
-    # deleting a user, created by Lopt
     del '/:username' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
         my $username = params->{username};
         my $posted_data = from_json(request->body);
         my $user_model = Lopt::Model::UserDeletion->new($posted_data);
         if($user_model->check_validity()) {
-            debug request->method . ' successful to ' . request->path;
+            debug(get_success_message(request));
             my $repository = Lopt::Service::UserRepository->new($user_model->data(), $username);
             return status 204 if $repository->delete();
-            warning request->method . ' failed to ' . request->path;
+            warning(get_warning_message(request));
             status 400;
             return Lopt::Model::Exception->new(400, $repository->error_message())->get_hash();
-        } else {
-            warning request->method . ' failed to ' . request->path;
-            status 400;
-            return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
         }
+        warning(get_warning_message(request));
+        status 400;
+        return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
     };
 
     # ban methods on /users
     any ['put', 'patch', 'delete'] => '' => sub {
-        # methods not allowed
-        warning 'Received a not allowed method ' . request->method . ' to ' . request->path;
+        warning(get_banned_method_message(request));
         status 405;
-        return Lopt::Model::Exception->new(405, "Method " . request->method . " not allowed on " . request->path)->get_hash();
+        return Lopt::Model::Exception->new(405, warning(get_banned_method_message(request)))->get_hash();
     };
 };
 

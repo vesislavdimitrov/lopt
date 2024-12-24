@@ -1,5 +1,8 @@
 package Lopt::Controllers::TaskController;
 
+use strict;
+use warnings;
+
 use Dancer2 appname => 'Lopt';
 use Lopt::Constants;
 use Lopt::Model::Task;
@@ -8,245 +11,250 @@ use Lopt::Model::Exception;
 use Lopt::Service::TaskRepository;
 use Lopt::Validation;
 use Lopt::Execution::TaskExecution;
+use Lopt::Controllers::Utils qw(
+    get_debug_message
+    get_success_message
+    get_warning_message
+    get_banned_method_message
+);
 
 prefix '/tasks' => sub {
     post '' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
-        my $posted_data = from_json(request->body);
-        my $task_model = Lopt::Model::Task->new($posted_data);
+        my $task_model = Lopt::Model::Task->new(from_json(request->body));
         if($task_model->check_validity()) {
             my $valid_credentials = verify_username($task_model->data()->{'username'});
             if(!$valid_credentials) {
-                warning request->method . ' failed to ' . request->path;
+                warning(get_warning_message(request));
                 status 400;
                 return Lopt::Model::Exception->new(
                     400,
                     "Cannot create task: Username '" . $task_model->data()->{'username'} . "' does not exist or cannot be used to run a task in the current state of its account."
                 )->get_hash();
             }
-            debug request->method . ' successful to ' . request->path;
+            debug(get_success_message(request));
             status 201;
             my $repository = Lopt::Service::TaskRepository->new(undef, $task_model->data());
             return $repository->create();
         }
-        warning request->method . ' failed to ' . request->path;
+        warning(get_warning_message(request));
         status 400;
         return Lopt::Model::Exception->new(400, $task_model->error_message())->get_hash();
     };
 
     get '' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
-        my $repository = Lopt::Service::TaskRepository->new();
-        my $tasks = $repository->fetch();
+        my $tasks = Lopt::Service::TaskRepository->new()->fetch();
         return $tasks if @{$tasks} > 0;
 
-        warning request->method . ' failed to ' . request->path;
+        warning(get_warning_message(request));
         status 404;
         return Lopt::Model::Exception->new(404, "No tasks found.")->get_hash();
     };
 
-    get '/executions' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+    prefix '/executions' => sub {
+        get '' => sub {
+            debug(get_debug_message(request));
 
-        my $task_execution = Lopt::Execution::TaskExecution->new();
-        my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
-        return { running_task_pid => $pidstat[0], running_task_status => $pidstat[1] };
-    };
-
-    get '/executions/ongoing' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
-
-        my $task_execution = Lopt::Execution::TaskExecution->new();
-        my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
-        if($pidstat[0] > $NO_PROCESS_PID && defined $pidstat[2]) {
-            delayed {
-                flush;
-                content to_json({ log => $task_execution->persister()->read_log($pidstat[2]) });
-                done;
-            };
-        } else {
-            warning request->method . ' failed to ' . request->path;
-            status 404;
-            return Lopt::Model::Exception->new(
-                404,
-                "Cannot fetch ongoing task log: there are no tasks currently running."
-            )->get_hash();
-        }
-    };
-
-    get '/executions/last' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
-
-        my $task_execution = Lopt::Execution::TaskExecution->new();
-        my $last_task_exists = $task_execution->persister()->get_last_task();
-        if(!defined $last_task_exists) {
-            warning request->method . ' failed to ' . request->path;
-            status 404;
-            return Lopt::Model::Exception->new(
-                404,
-                "Cannot fetch last executed task: its data has been deleted or no tasks have been run yet."
-            )->get_hash();
-        }
-        delayed {
-            flush;
-            content to_json($task_execution->review_last_task());
-            done;
+            my $task_execution = Lopt::Execution::TaskExecution->new();
+            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            return { running_task_pid => $pidstat[0], running_task_status => $pidstat[1] };
         };
-    };
 
-    del '/executions/last' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        get '/ongoing' => sub {
+            debug(get_debug_message(request));
 
-        my $task_execution = Lopt::Execution::TaskExecution->new();
-        my $last_task_exists = $task_execution->persister()->get_last_task();
-        if(!defined $last_task_exists) {
-            warning request->method . ' failed to ' . request->path;
-            status 400;
-            return Lopt::Model::Exception->new(
-                400,
-                "Cannot delete the last executed task data: it has already been deleted or no tasks have been run yet."
-            )->get_hash();
-        }
-
-        $task_execution->persister()->delete_last_task();
-        return status 204;
-    };
-
-    post '/executions/pause' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
-
-        my $task_execution = Lopt::Execution::TaskExecution->new();
-        my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
-        if($pidstat[0] > $NO_PROCESS_PID && $pidstat[1] == $PROCESS_RUNNING_STATE) {
-            $task_execution->set_pid($pidstat[0]);
-            $task_execution->pause_task();
-            return status 204;
-        }
-
-        warning request->method . ' failed to ' . request->path;
-        status 503;
-        return Lopt::Model::Exception->new(
-            503,
-            "Cannot pause running task: no task to be paused."
-        )->get_hash();
-    };
-
-    post '/executions/resume' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
-
-        my $task_execution = Lopt::Execution::TaskExecution->new();
-        my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
-        if($pidstat[0] > $NO_PROCESS_PID && $pidstat[1] == $PROCESS_PAUSED_STATE) {
-            $task_execution->set_pid($pidstat[0]);
-            $task_execution->resume_task();
-            return status 204;
-        }
-        warning request->method . ' failed to ' . request->path;
-        status 503;
-        return Lopt::Model::Exception->new(
-            503, "Cannot resume running task: no task to be resumed."
-        )->get_hash();
-    };
-
-    post '/executions/stop' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
-
-        my $task_execution = Lopt::Execution::TaskExecution->new();
-        my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
-        if($pidstat[0] > $NO_PROCESS_PID) {
-            $task_execution->set_pid($pidstat[0]);
-            $task_execution->stop_task();
-            return status 204;
-        }
-        warning request->method . ' failed to ' . request->path;
-        status 503;
-        return Lopt::Model::Exception->new(
-            503,
-            "Cannot stop running task: no task to be stopped."
-        )->get_hash();
-    };
-
-    # executing a task
-    post '/executions/:id' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
-
-        my $task_execution = Lopt::Execution::TaskExecution->new();
-        my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
-        if($pidstat[0] > $NO_PROCESS_PID) {
-            warning request->method . ' failed to ' . request->path;
-            status 503;
-            return Lopt::Model::Exception->new(
-                503,
-                "Cannot execute task: another task is currently in progress."
-            )->get_hash();
-        }
-
-        my $last_task = $task_execution->persister()->get_last_task();
-        if(defined $last_task) {
-            warning request->method . ' failed to ' . request->path;
-            status 503;
-            return Lopt::Model::Exception->new(
-                503,
-                "Cannot execute task: another task is pending review."
-            )->get_hash();
-        }
-
-        my $id = params->{id};
-        if(!validate_id($id)) {
-            warning request->method . ' failed to ' . request->path;
-            status 400;
-            return Lopt::Model::Exception->new(
-                400,
-                "Cannot execute task: invalid task ID."
-            )->get_hash();
-        }
-          
-        my $post_data = from_json(request->body);
-        my $task_model = Lopt::Model::TaskExecution->new($post_data);
-        if($task_model->check_validity()) {
-            my $repository = Lopt::Service::TaskRepository->new($id);
-            my $task = $repository->fetch();
-            if(defined $task) {
-                my $valid_credentials = verify_credentials($task->{'username'}, $task_model->data()->{'password'});
-                if(!$valid_credentials) {
-                    warning request->method . ' failed to ' . request->path;
-                    status 400;
-                    return Lopt::Model::Exception->new(
-                        400,
-                        "Cannot execute task: invalid username used when creating the task or an invalid password supplied when executing the task."
-                    )->get_hash();
-                }
-                debug request->method . ' successful to ' . request->path;
-                $task_execution->set_id($id);
-                $task_execution->set_task($task);
+            my $task_execution = Lopt::Execution::TaskExecution->new();
+            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            if($pidstat[0] > $NO_PROCESS_PID && defined $pidstat[2]) {
                 delayed {
                     flush;
-                    $task_execution->execute();
+                    content to_json({ log => $task_execution->persister()->read_log($pidstat[2]) });
                     done;
                 };
             } else {
-                warning request->method . ' failed to ' . request->path;
+                warning(get_warning_message(request));
                 status 404;
                 return Lopt::Model::Exception->new(
                     404,
-                    "Cannot execute task: task not found."
+                    "Cannot fetch ongoing task log: there are no tasks currently running."
                 )->get_hash();
             }
-        } else {
-            warning request->method . ' failed to ' . request->path;
-            status 400;
-            return Lopt::Model::Exception->new(400, $task_model->error_message())->get_hash();
-        }
+        };
+
+        get '/last' => sub {
+            debug(get_debug_message(request));
+
+            my $task_execution = Lopt::Execution::TaskExecution->new();
+            my $last_task_exists = $task_execution->persister()->get_last_task();
+            if(!defined $last_task_exists) {
+                warning(get_warning_message(request));
+                status 404;
+                return Lopt::Model::Exception->new(
+                    404,
+                    "Cannot fetch last executed task: its data has been deleted or no tasks have been run yet."
+                )->get_hash();
+            }
+            delayed {
+                flush;
+                content to_json($task_execution->review_last_task());
+                done;
+            };
+        };
+
+        del '/last' => sub {
+            debug(get_debug_message(request));
+
+            my $task_execution = Lopt::Execution::TaskExecution->new();
+            my $last_task_exists = $task_execution->persister()->get_last_task();
+            if(!defined $last_task_exists) {
+                warning(get_warning_message(request));
+                status 400;
+                return Lopt::Model::Exception->new(
+                    400,
+                    "Cannot delete the last executed task data: it has already been deleted or no tasks have been run yet."
+                )->get_hash();
+            }
+
+            $task_execution->persister()->delete_last_task();
+            return status 204;
+        };
+
+        post '/pause' => sub {
+            debug(get_debug_message(request));
+
+            my $task_execution = Lopt::Execution::TaskExecution->new();
+            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            if($pidstat[0] > $NO_PROCESS_PID && $pidstat[1] == $PROCESS_RUNNING_STATE) {
+                $task_execution->set_pid($pidstat[0]);
+                $task_execution->pause_task();
+                return status 204;
+            }
+
+            warning(get_warning_message(request));
+            status 503;
+            return Lopt::Model::Exception->new(
+                503,
+                "Cannot pause running task: no task to be paused."
+            )->get_hash();
+        };
+
+        post '/resume' => sub {
+            debug(get_debug_message(request));
+
+            my $task_execution = Lopt::Execution::TaskExecution->new();
+            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            if($pidstat[0] > $NO_PROCESS_PID && $pidstat[1] == $PROCESS_PAUSED_STATE) {
+                $task_execution->set_pid($pidstat[0]);
+                $task_execution->resume_task();
+                return status 204;
+            }
+            warning(get_warning_message(request));
+            status 503;
+            return Lopt::Model::Exception->new(
+                503, "Cannot resume running task: no task to be resumed."
+            )->get_hash();
+        };
+
+        post '/stop' => sub {
+            debug(get_debug_message(request));
+
+            my $task_execution = Lopt::Execution::TaskExecution->new();
+            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            if($pidstat[0] > $NO_PROCESS_PID) {
+                $task_execution->set_pid($pidstat[0]);
+                $task_execution->stop_task();
+                return status 204;
+            }
+            warning(get_warning_message(request));
+            status 503;
+            return Lopt::Model::Exception->new(
+                503,
+                "Cannot stop running task: no task to be stopped."
+            )->get_hash();
+        };
+
+        post '/:id' => sub {
+            debug(get_debug_message(request));
+
+            my $task_execution = Lopt::Execution::TaskExecution->new();
+            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            if($pidstat[0] > $NO_PROCESS_PID) {
+                warning(get_warning_message(request));
+                status 503;
+                return Lopt::Model::Exception->new(
+                    503,
+                    "Cannot execute task: another task is currently in progress."
+                )->get_hash();
+            }
+
+            my $last_task = $task_execution->persister()->get_last_task();
+            if(defined $last_task) {
+                warning(get_warning_message(request));
+                status 503;
+                return Lopt::Model::Exception->new(
+                    503,
+                    "Cannot execute task: another task is pending review."
+                )->get_hash();
+            }
+
+            my $id = params->{id};
+            if(!validate_id($id)) {
+                warning(get_warning_message(request));
+                status 400;
+                return Lopt::Model::Exception->new(
+                    400,
+                    "Cannot execute task: invalid task ID."
+                )->get_hash();
+            }
+              
+            my $post_data = from_json(request->body);
+            my $task_model = Lopt::Model::TaskExecution->new($post_data);
+            if($task_model->check_validity()) {
+                my $repository = Lopt::Service::TaskRepository->new($id);
+                my $task = $repository->fetch();
+                if(defined $task) {
+                    my $valid_credentials = verify_credentials($task->{'username'}, $task_model->data()->{'password'});
+                    if(!$valid_credentials) {
+                        warning(get_warning_message(request));
+                        status 400;
+                        return Lopt::Model::Exception->new(
+                            400,
+                            "Cannot execute task: invalid username used when creating the task or an invalid password supplied when executing the task."
+                        )->get_hash();
+                    }
+                    debug(get_success_message(request));
+                    $task_execution->set_id($id);
+                    $task_execution->set_task($task);
+                    delayed {
+                        flush;
+                        $task_execution->execute();
+                        done;
+                    };
+                } else {
+                    warning(get_warning_message(request));
+                    status 404;
+                    return Lopt::Model::Exception->new(
+                        404,
+                        "Cannot execute task: task not found."
+                    )->get_hash();
+                }
+            } else {
+                warning(get_warning_message(request));
+                status 400;
+                return Lopt::Model::Exception->new(400, $task_model->error_message())->get_hash();
+            }
+        };
     };
 
     get '/:id' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
         my $id = params->{id};
         if(!validate_id($id)) {
-            warning request->method . ' failed to ' . request->path;
+            warning(get_warning_message(request));
             status 400;
             return Lopt::Model::Exception->new(
                 400,
@@ -258,7 +266,7 @@ prefix '/tasks' => sub {
         my $task = $repository->fetch();
         return $task if defined $task;
 
-        warning request->method . ' failed to ' . request->path;
+        warning(get_warning_message(request));
         status 404;
         return Lopt::Model::Exception->new(
             404,
@@ -267,11 +275,11 @@ prefix '/tasks' => sub {
     };
 
     del '/:id' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
         my $id = params->{id};
         if(!validate_id($id)) {
-            warning request->method . ' failed to ' . request->path;
+            warning(get_warning_message(request));
             status 400;
             return Lopt::Model::Exception->new(
                 400,
@@ -283,7 +291,7 @@ prefix '/tasks' => sub {
         my $task = $repository->delete();
         return status 204 if defined $task;
 
-        warning request->method . ' failed to ' . request->path;
+        warning(get_warning_message(request));
         status 404;
         return Lopt::Model::Exception->new(
             404,
@@ -292,11 +300,11 @@ prefix '/tasks' => sub {
     };
 
     put '/:id' => sub {
-        debug 'Received ' . request->method . ' to ' . request->path;
+        debug(get_debug_message(request));
 
         my $id = params->{id};
         if(!validate_id($id)) {
-            warning request->method . ' failed to ' . request->path;
+            warning(get_warning_message(request));
             status 400;
             return Lopt::Model::Exception->new(
                 400,
@@ -309,7 +317,7 @@ prefix '/tasks' => sub {
         if ($task_model->check_validity()) {
             my $valid_credentials = verify_username($task_model->data()->{'username'});
             if (!$valid_credentials) {
-                warning request->method . ' failed to ' . request->path;
+                warning(get_warning_message(request));
                 status 400;
                 return Lopt::Model::Exception->new(400, "Cannot update task: Username '" . $task_model->data()->{'username'} . "' does not exist or cannot be used to run a task in the current state of its account.")->get_hash();
             }
@@ -317,38 +325,38 @@ prefix '/tasks' => sub {
             my $repository = Lopt::Service::TaskRepository->new($id, $task_model->data());
             my $task = $repository->update();
             if (defined $task) {
-                debug request->method . ' successful to ' . request->path;
+                debug(get_debug_message(request));
                 return $task;
             }
 
-            warning request->method . ' failed to ' . request->path;
+            warning(get_warning_message(request));
             status 404;
             return Lopt::Model::Exception->new(404, "Cannot update task: task not found.")->get_hash();
         }
-        warning request->method . ' failed to ' . request->path;
+        warning(get_warning_message(request));
         status 400;
         return Lopt::Model::Exception->new(400, $task_model->error_message())->get_hash();
     };
 
     # ban methods on /tasks
     any ['put', 'patch', 'delete'] => '' => sub {
-        warning 'Received a not allowed method ' . request->method . ' to ' . request->path;
+        warning(get_banned_method_message(request));
         status 405;
-        return Lopt::Model::Exception->new(405, "Method " . request->method . " not allowed on " . request->path)->get_hash();
+        return Lopt::Model::Exception->new(405, warning(get_banned_method_message(request)))->get_hash();
     };
 
     # ban methods on /tasks/executions
     any ['post', 'put', 'patch', 'delete'] => '/executions' => sub {
-        warning 'Received a not allowed method ' . request->method . ' to ' . request->path;
+        warning(get_banned_method_message(request));
         status 405;
-        return Lopt::Model::Exception->new(405, "Method " . request->method . " not allowed on " . request->path)->get_hash();
+        return Lopt::Model::Exception->new(405, warning(get_banned_method_message(request)))->get_hash();
     };
 
     # ban methods on /tasks/executions/**
     any ['put', 'patch', 'delete'] => '/executions/**' => sub {
-        warning 'Received a not allowed method ' . request->method . ' to ' . request->path;
+        warning(get_banned_method_message(request));
         status 405;
-        return Lopt::Model::Exception->new(405, "Method " . request->method . " not allowed on " . request->path)->get_hash();
+        return Lopt::Model::Exception->new(405, warning(get_banned_method_message(request)))->get_hash();
     };
 };
 

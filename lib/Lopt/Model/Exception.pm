@@ -5,19 +5,19 @@ use Dancer2::Core::HTTP qw();
 
 sub new {
     my ($class, $status, $message) = @_;
-    if($status =~ /\A\d+\z/) {
-        my $self = {
-            data => {
-                status => $status,
-                title => "Error $status: " . Dancer2::Core::HTTP->status_message($status),
-                message => $message
-            }
-        };
-        bless $self, $class;
-    } else {
+    unless ($status =~ /\A\d+\z/) {
         error "Invalid HTTP status code passed when generating an Exception";
         return undef;
     }
+
+    my $self = {
+        data => {
+            status  => $status,
+            title   => "Error $status: " . Dancer2::Core::HTTP->status_message($status),
+            message => $message
+        }
+    };
+    bless $self, $class;
 }
 
 sub get_hash {
