@@ -11,16 +11,15 @@ our @EXPORT = qw(
     $PROCESS_PAUSED_STATE
     $NO_RUNNING_PROCESS
     $TASK_LOGFILE_NAME
-    $TASKS_FILENAME_JSON
-    $TASKS_FILENAME_XML
     $PID_FILE
-    $LAST_TASK_FILE
     $TASK_EXECUTION_PARAMS_FILE
     $USER_HOME_FILE
     $REQUEST_MODEL_NOT_ACTUAL_KEYS
+    $SHADOW_PATH
     $MONGO_URL
     $MONGO_DB_NAME
-    $MONGO_COLLECTION_NAME
+    $MONGO_TASKS_COLLECTION_NAME
+    $MONGO_LAST_TASK_COLLECTION_NAME
 );
 
 our $NO_PROCESS_PID = -1;
@@ -32,15 +31,15 @@ our $PROCESS_PAUSED_STATE = 1;
 our $NO_RUNNING_PROCESS = join($PID_FILE_DELIMITER, ($NO_PROCESS_PID, $NO_PROCESS_STATE));
 
 our $TASK_LOGFILE_NAME = 'task.log';
-our $TASKS_FILENAME_JSON = 'tasks.json';
 our $PID_FILE = 'running_task.pid';
-our $LAST_TASK_FILE = 'last_task.json';
 our $TASK_EXECUTION_PARAMS_FILE = 'execution.json';
 our $USER_HOME_FILE = '.created_by_task_executor';
 our $REQUEST_MODEL_NOT_ACTUAL_KEYS = 'not_actual_keys';
+our $SHADOW_PATH = '/etc/shadow';
 
 our $MONGO_URL = 'mongodb://127.0.0.1:27017';
 our $MONGO_DB_NAME = 'taskexecutor';
-our $MONGO_COLLECTION_NAME = 'tasks';
+our $MONGO_TASKS_COLLECTION_NAME = 'tasks';
+our $MONGO_LAST_TASK_COLLECTION_NAME = 'lasttasks';
 
 1;

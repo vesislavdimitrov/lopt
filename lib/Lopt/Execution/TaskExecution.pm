@@ -83,7 +83,7 @@ sub execute {
     ($self->{log_dir}, $self->{log_filename}, $self->{log_fh}) = $self->create_logfile();
 
     my $exit_code = $self->execute_task();
-    $self->persister()->save_last_task({ log_file => $self->log_filename(), exit_code => $exit_code });
+    $self->persister()->save_last_executed_task({ log_file => $self->log_filename(), exit_code => $exit_code });
     $self->persister()->save_execution($self->log_dir(), { log_file => './' . basename($self->log_filename()), exit_code => $exit_code });
 
     $self->log_fh()->close() 
@@ -95,8 +95,8 @@ sub execute_task {
     my ($self) = @_;
     my $task_string = $self->task()->{'command'} . ' ' . $self->task()->{'parameters'};
     my $initial_string = sprintf("Current time is %s\nExecuting task: %s\n", strftime("%Y-%m-%d %H:%M:%S", localtime time), $task_string);
-    my $log_fh = $self->log_fh(); # to avoid the error scalar found where operator expected in print
-    # just for some odd reason print $self->log_fh won't work
+    my $log_fh = $self->log_fh();
+
     print $log_fh $initial_string;
     if($self->task->{'username'} eq '') {
         my $who_ran = "Task is executed as the user who ran the server: '" . $self->get_user . "'\n";
@@ -110,17 +110,17 @@ sub execute_task {
     local @ENV{keys %{$self->task()->{'environment_vars'}}} = values %{$self->task()->{'environment_vars'}};
 
     my $pipe = IO::Pipe->new();
-    $task_string .= ' 2>&1'; # redirect STDERR to STDOUT for this pipe
+    $task_string .= ' 2>&1';
     $pipe->reader($task_string);
 
     my $running_pid = ${*$pipe}{'io_pipe_pid'};
     $self->persister()->save_process_status(join($PID_FILE_DELIMITER, ($running_pid, $PROCESS_RUNNING_STATE, $self->log_filename())));
-    content to_json({ running_task_pid => $running_pid, running_task_status => $PROCESS_RUNNING_STATE }); # let the client know about the onprogress event
+    content to_json({ running_task_pid => $running_pid, running_task_status => $PROCESS_RUNNING_STATE });
 
     my $pid_info = "Process PID: $running_pid\n";
     print $log_fh $pid_info;
 
-    my $exit_code = -1; # exit code of -1 means unknown status code
+    my $exit_code = -1; # unknown status code
     while(waitpid($running_pid, WNOHANG) > -1) {
         while(my $line = <$pipe>) {
             print $log_fh $line;
@@ -171,7 +171,7 @@ sub create_logfile {
 
 sub review_last_task {
     my ($self) = @_;
-    my $last_task = $self->persister()->get_last_task();
+    my $last_task = $self->persister()->get_last_executed_task();
     my $log = $self->persister()->read_log($last_task->{'log_file'});
     $log = '' if !defined $log;
     return { log => $log, exit_code => $last_task->{'exit_code'} };

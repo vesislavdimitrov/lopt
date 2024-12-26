@@ -5,6 +5,7 @@ use warnings;
 
 use IO::File;
 use Exporter qw(import);
+use Lopt::Constants;
 
 our @EXPORT = qw(validate_id verify_credentials verify_username);
 
@@ -17,7 +18,7 @@ sub verify_credentials {
     my ($username, $password) = @_;
     return 1 if !length($username);
 
-    my $shadow_fh = get_shadow_fh();
+    my $shadow_fh = _get_shadow_fh();
 
     while(my $line = <$shadow_fh>) {
         my @userdata = split(/:/, $line);
@@ -42,7 +43,7 @@ sub verify_username {
     my ($username) = @_;
     return 1 if !length($username);
 
-    my $shadow_fh = get_shadow_fh();
+    my $shadow_fh = _get_shadow_fh();
 
     while(my $line = <$shadow_fh>) {
         my @userdata = split(/:/, $line);
@@ -51,9 +52,9 @@ sub verify_username {
     return 0;
 }
 
-sub get_shadow_fh {
-    return (IO::File->new('/etc/shadow', 'r')
-        or die "Cannot verify credentials using /etc/shadow file: $!");
+sub _get_shadow_fh {
+    return (IO::File->new($SHADOW_PATH, 'r')
+        or die "Cannot verify credentials using $SHADOW_PATH file: $!");
 }
 
 1;

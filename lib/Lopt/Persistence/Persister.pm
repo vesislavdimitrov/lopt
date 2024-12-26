@@ -1,4 +1,4 @@
-package Lopt::Persistence::BasePersister;
+package Lopt::Persistence::Persister;
 
 use Dancer2 appname => 'Lopt';
 use POSIX;
@@ -58,27 +58,13 @@ sub get_process_status {
 sub save_process_status {
     my ($self, $pid) = @_;
     write_text($PID_FILE, $pid);
-}
-
-sub get_last_task {
-    my ($self) = @_;
-    my $json = eval { read_json($LAST_TASK_FILE) };
-    return $json;
-}
-
-sub save_last_task {
-    my ($self, $last_task_data) = @_;
-    write_json($LAST_TASK_FILE, $last_task_data);
-}
-
-sub delete_last_task {
-    my ($self) = @_;
-    unlink $LAST_TASK_FILE;
+    return 1;
 }
 
 sub save_execution {
     my ($self, $log_dir, $execution) = @_;
     write_json("$log_dir/$TASK_EXECUTION_PARAMS_FILE", $execution);
+    return 1;
 }
 
 sub read_log {
@@ -90,21 +76,23 @@ sub write_user_home {
     my ($self, $username) = @_;
     my $user_home = File::HomeDir->users_home($username);
     my $user_file = "$user_home/$USER_HOME_FILE";
-    if(!-e $user_file) {
-        my $user_fh = IO::File->new($user_file, 'w')
-            or die "Error when creating user: cannot open $user_file: $!";
-        print $user_fh strftime("%Y-%m-%d %H:%M:%S", localtime time);
-        $user_fh->close()
-            or die "Cannot close $user_file: $!";
-        chmod 0444, $user_file;
-    }
+    return if -e $user_file;
+
+    my $user_fh = IO::File->new($user_file, 'w')
+        or die "Error when creating user: cannot open $user_file: $!";
+    print $user_fh strftime("%Y-%m-%d %H:%M:%S", localtime time);
+    $user_fh->close()
+        or die "Cannot close $user_file: $!";
+    chmod 0444, $user_file;
+    return 1;
 }
+
 
 sub get_users {
     my ($self) = @_;
     my $users = [];
-    my $shadow_fh = IO::File->new('/etc/shadow', 'r')
-        or die "Cannot figure out who the users are using /etc/shadow file: $!";
+    my $shadow_fh = IO::File->new($SHADOW_PATH, 'r')
+        or die "Canot find users in $SHADOW_PATH: $!";
     while(my $line = <$shadow_fh>) {
         my $username = (split(/:/, $line))[0];
         my $user_home = File::HomeDir->users_home($username);

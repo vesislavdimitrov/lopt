@@ -88,7 +88,7 @@ prefix '/tasks' => sub {
             debug(get_debug_message(request));
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
-            my $last_task_exists = $task_execution->persister()->get_last_task();
+            my $last_task_exists = $task_execution->persister()->get_last_executed_task();
             if(!defined $last_task_exists) {
                 warning(get_warning_message(request));
                 status 404;
@@ -108,7 +108,7 @@ prefix '/tasks' => sub {
             debug(get_debug_message(request));
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
-            my $last_task_exists = $task_execution->persister()->get_last_task();
+            my $last_task_exists = $task_execution->persister()->get_last_executed_task();
             if(!defined $last_task_exists) {
                 warning(get_warning_message(request));
                 status 400;
@@ -118,7 +118,7 @@ prefix '/tasks' => sub {
                 )->get_hash();
             }
 
-            $task_execution->persister()->delete_last_task();
+            $task_execution->persister()->delete_last_executed_task();
             return status 204;
         };
 
@@ -190,7 +190,7 @@ prefix '/tasks' => sub {
                 )->get_hash();
             }
 
-            my $last_task = $task_execution->persister()->get_last_task();
+            my $last_task = $task_execution->persister()->get_last_executed_task();
             if(defined $last_task) {
                 warning(get_warning_message(request));
                 status 503;

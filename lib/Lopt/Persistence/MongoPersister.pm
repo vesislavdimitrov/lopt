@@ -9,10 +9,11 @@ use UUID::Tiny qw(:std);
 use Lopt::Constants qw(
     $MONGO_URL
     $MONGO_DB_NAME
-    $MONGO_COLLECTION_NAME
+    $MONGO_TASKS_COLLECTION_NAME
+    $MONGO_LAST_TASK_COLLECTION_NAME
 );
 
-use parent qw(Lopt::Persistence::BasePersister);
+use parent qw(Lopt::Persistence::Persister);
 
 my $mongo_client;
 
@@ -21,13 +22,13 @@ sub save_task {
     my $task = $self->task();
 
     $task->{id} = create_uuid_as_string(UUID_V4);
-    $self->_get_collection()->insert_one($task);
+    $self->_get_tasks_collection()->insert_one($task);
     return $task;
 }
 
 sub get_tasks {
     my ($self) = @_;
-    my $tasks_cursor = $self->_get_collection()->find();
+    my $tasks_cursor = $self->_get_tasks_collection()->find();
     my @tasks = $tasks_cursor->all();
 
     @tasks = map { $self->_remove_mongo_id($_) } @tasks;
@@ -36,7 +37,7 @@ sub get_tasks {
 
 sub get_task {
     my ($self) = @_;
-    my $task = $self->_get_collection()->find_one({
+    my $task = $self->_get_tasks_collection()->find_one({
         id => $self->task_id()
     });
     return undef if !$task;
@@ -48,7 +49,7 @@ sub update_task {
     my $task_id = $self->task_id();
     my $new_task = $self->task();
 
-    my $result = $self->_get_collection()->update_one(
+    my $result = $self->_get_tasks_collection()->update_one(
         { id => $task_id },
         { '$set' => $new_task }
     );
@@ -60,18 +61,48 @@ sub delete_task {
     my ($self) = @_;
     my $task_id = $self->task_id();
 
-    my $result = $self->_get_collection()->delete_one(
+    my $result = $self->_get_tasks_collection()->delete_one(
         { id => $task_id }
     );
     return undef if not $result->deleted_count > 0;
     return 1;
 }
 
-sub _get_collection {
+sub save_last_executed_task {
+    my ($self, $last_task_data) = @_;
+    $self->_get_last_task_collection()->replace_one(
+        {},
+        $last_task_data,
+        { upsert => 1 }
+    );
+    return 1;
+}
+
+sub get_last_executed_task {
+    my ($self) = @_;
+    my $last_task = $self->_get_last_task_collection()->find_one();
+    return undef unless $last_task;
+    return $self->_remove_mongo_id($last_task);
+}
+
+sub delete_last_executed_task {
+    my ($self) = @_;
+    $self->_get_last_task_collection()->delete_one({});
+    return 1;
+}
+
+sub _get_tasks_collection {
     my ($self) = @_;
     $mongo_client ||= _initialize_mongo_client();
     my $db = $mongo_client->get_database($MONGO_DB_NAME);
-    return $db->get_collection($MONGO_COLLECTION_NAME);
+    return $db->get_collection($MONGO_TASKS_COLLECTION_NAME);
+}
+
+sub _get_last_task_collection {
+    my ($self) = @_;
+    $mongo_client ||= _initialize_mongo_client();
+    my $db = $mongo_client->get_database($MONGO_DB_NAME);
+    return $db->get_collection($MONGO_LAST_TASK_COLLECTION_NAME);
 }
 
 sub _initialize_mongo_client {

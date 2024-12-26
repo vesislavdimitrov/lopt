@@ -1,7 +1,7 @@
 package Lopt::Service::UserRepository;
 
 use Dancer2 appname => 'Lopt';
-use Lopt::Persistence::MongoPersister;
+use Lopt::Persistence::Persister;
 
 use parent qw(Lopt::Service::CrudRepository);
 
@@ -9,7 +9,7 @@ sub new {
     my ($class, $user, $username) = @_;
     my $self = {
         user => $user,
-        persister => Lopt::Persistence::MongoPersister->new(),
+        persister => Lopt::Persistence::Persister->new(),
         error_message => undef,
         username => $username
     };
