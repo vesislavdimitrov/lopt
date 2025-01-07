@@ -22,25 +22,27 @@ prefix '/tasks' => sub {
     post '' => sub {
         debug(get_debug_message(request));
 
-        my $task_model = Lopt::Model::Task->new(from_json(request->body));
-        if($task_model->check_validity()) {
-            my $valid_credentials = verify_username($task_model->data()->{'username'});
-            if(!$valid_credentials) {
-                warning(get_warning_message(request));
-                status 400;
-                return Lopt::Model::Exception->new(
-                    400,
-                    "Cannot create task: Username '" . $task_model->data()->{'username'} . "' does not exist or cannot be used to run a task in the current state of its account."
-                )->get_hash();
-            }
-            debug(get_success_message(request));
-            status 201;
-            my $repository = Lopt::Service::TaskRepository->new(undef, $task_model->data());
-            return $repository->create();
+        my $task_model = Lopt::Model::Task->new(from_json(request->body()));
+        if(!$task_model->check_validity()) {
+            warning(get_warning_message(request));
+            status 400;
+            return Lopt::Model::Exception->new(400, $task_model->error_message())->get_hash();
         }
-        warning(get_warning_message(request));
-        status 400;
-        return Lopt::Model::Exception->new(400, $task_model->error_message())->get_hash();
+
+        my $valid_credentials = verify_username($task_model->data()->{'username'});
+        if(!$valid_credentials) {
+            warning(get_warning_message(request));
+            status 400;
+            return Lopt::Model::Exception->new(
+                400,
+                "Cannot create task: Username '" . $task_model->data()->{'username'} . "' does not exist or cannot be used to run a task in the current state of its account."
+            )->get_hash();
+        }
+
+        debug(get_success_message(request));
+        status 201;
+        my $repository = Lopt::Service::TaskRepository->new(undef, $task_model->data());
+        return $repository->create();
     };
 
     get '' => sub {
@@ -68,13 +70,8 @@ prefix '/tasks' => sub {
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
             my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
-            if($pidstat[0] > $NO_PROCESS_PID && defined $pidstat[2]) {
-                delayed {
-                    flush;
-                    content to_json({ log => $task_execution->persister()->read_log($pidstat[2]) });
-                    done;
-                };
-            } else {
+
+            if ($pidstat[0] <= $NO_PROCESS_PID || !defined $pidstat[2]) {
                 warning(get_warning_message(request));
                 status 404;
                 return Lopt::Model::Exception->new(
@@ -82,6 +79,11 @@ prefix '/tasks' => sub {
                     "Cannot fetch ongoing task log: there are no tasks currently running."
                 )->get_hash();
             }
+            delayed {
+                flush;
+                content to_json({ log => $task_execution->persister()->read_log($pidstat[2]) });
+                done;
+            };
         };
 
         get '/last' => sub {
@@ -264,14 +266,15 @@ prefix '/tasks' => sub {
 
         my $repository = Lopt::Service::TaskRepository->new($id);
         my $task = $repository->fetch();
-        return $task if defined $task;
-
-        warning(get_warning_message(request));
-        status 404;
-        return Lopt::Model::Exception->new(
-            404,
-            "Cannot fetch task data: task not found."
-        )->get_hash();
+        if(!defined $task) {
+            warning(get_warning_message(request));
+            status 404;
+            return Lopt::Model::Exception->new(
+                404,
+                "Cannot fetch task data: task not found."
+            )->get_hash();
+        }
+        return $task;
     };
 
     del '/:id' => sub {
@@ -289,14 +292,15 @@ prefix '/tasks' => sub {
 
         my $repository = Lopt::Service::TaskRepository->new($id);
         my $task = $repository->delete();
-        return status 204 if defined $task;
-
-        warning(get_warning_message(request));
-        status 404;
-        return Lopt::Model::Exception->new(
-            404,
-            "Cannot delete task: task not found."
-        )->get_hash();
+        if (!defined $task) {
+            warning(get_warning_message(request));
+            status 404;
+            return Lopt::Model::Exception->new(
+                404,
+                "Cannot delete task: task not found."
+            )->get_hash();
+        }
+        return status 204
     };
 
     put '/:id' => sub {
@@ -314,28 +318,32 @@ prefix '/tasks' => sub {
           
         my $put_data = from_json(request->body);
         my $task_model = Lopt::Model::Task->new($put_data);
-        if ($task_model->check_validity()) {
-            my $valid_credentials = verify_username($task_model->data()->{'username'});
-            if (!$valid_credentials) {
-                warning(get_warning_message(request));
-                status 400;
-                return Lopt::Model::Exception->new(400, "Cannot update task: Username '" . $task_model->data()->{'username'} . "' does not exist or cannot be used to run a task in the current state of its account.")->get_hash();
-            }
 
-            my $repository = Lopt::Service::TaskRepository->new($id, $task_model->data());
-            my $task = $repository->update();
-            if (defined $task) {
-                debug(get_debug_message(request));
-                return $task;
-            }
+        if (!$task_model->check_validity()) {
+            warning(get_warning_message(request));
+            status 400;
+            return Lopt::Model::Exception->new(400, $task_model->error_message())->get_hash();
+        }
 
+        my $valid_credentials = verify_username($task_model->data()->{'username'});
+        if (!$valid_credentials) {
+            warning(get_warning_message(request));
+            status 400;
+            return Lopt::Model::Exception->new(
+                400,
+                "Cannot update task: Username '" . $task_model->data()->{'username'} . "' does not exist or cannot be used to run a task in the current state of its account."
+            )->get_hash();
+        }
+
+        my $repository = Lopt::Service::TaskRepository->new($id, $task_model->data());
+        my $task = $repository->update();
+        if (!defined $task) {
             warning(get_warning_message(request));
             status 404;
             return Lopt::Model::Exception->new(404, "Cannot update task: task not found.")->get_hash();
         }
-        warning(get_warning_message(request));
-        status 400;
-        return Lopt::Model::Exception->new(400, $task_model->error_message())->get_hash();
+        debug(get_debug_message(request));
+        return $task;
     };
 
     # ban methods on /tasks

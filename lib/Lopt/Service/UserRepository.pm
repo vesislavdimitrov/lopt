@@ -51,7 +51,7 @@ sub create {
 }
 
 sub fetch {
-    my ($self) = @_;
+    my ($self) = @_; #TODO, error message here not in the controller.
     return $self->persister()->get_users();
 }
 

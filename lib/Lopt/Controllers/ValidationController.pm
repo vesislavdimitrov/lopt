@@ -8,6 +8,17 @@ use Lopt::Controllers::Utils qw(
     get_banned_method_message
 );
 
+use constant {
+    INVALID_UID => "Invalid UID.",
+    UID_ALREADY_IN_USE => "UID is already in use.",
+    USER_NOT_CREATED_BY_LOPT => "User '%s' has not been created by Lopt.",
+    USER_DOES_NOT_EXIST => "User '%s' does not exist.",
+    USER_ALREADY_EXISTS => "User '%s' already exists.",
+    INVALID_USERNAME_TASK_ERROR => "Username '%s' does not exist or cannot be used to run a task in the current state of its account.",
+    INVALID_ID => "Invalid ID.",
+    NO_TASK_FOUND => "No task found with ID %s.",
+};
+
 prefix '/validation' => sub {
     get '/users/uid/:uid' => sub {
         debug(get_debug_message(request));
@@ -15,11 +26,11 @@ prefix '/validation' => sub {
         my $uid = params->{uid};
         if(!validate_id($uid)) {
             status 400;
-            return Lopt::Model::Exception->new(400, "Invalid UID.")->get_hash();
+            return Lopt::Model::Exception->new(400, INVALID_UID)->get_hash();
         }
         if(defined scalar getpwuid($uid)) {
             status 400;
-            return Lopt::Model::Exception->new(400, "UID is already in use.")->get_hash();
+            return Lopt::Model::Exception->new(400, UID_ALREADY_IN_USE)->get_hash();
         }
         return status 204;
     };
@@ -36,13 +47,12 @@ prefix '/validation' => sub {
 
             if($username_exists && !$username_used) {
                 status 400;
-                return Lopt::Model::Exception->new(400, "User '$username' has not been created by Lopt.")->get_hash();
+                return Lopt::Model::Exception->new(400, sprintf(USER_NOT_CREATED_BY_LOPT, $username))->get_hash();
             }
             if(!$username_exists) {
                 status 400;
-                return Lopt::Model::Exception->new(400, "User '$username' does not exist.")->get_hash();
+                return Lopt::Model::Exception->new(400, sprintf(USER_DOES_NOT_EXIST, $username))->get_hash();
             }
-
             return status 204;
         };
 
@@ -52,9 +62,8 @@ prefix '/validation' => sub {
             my $username = params->{username};
             if(defined getpwnam($username)) {
                 status 400;
-                return Lopt::Model::Exception->new(400, "User '$username' already exists.")->get_hash();
+                return Lopt::Model::Exception->new(400, sprintf(USER_ALREADY_EXISTS, $username))->get_hash();
             }
-
             return status 204;
         };
     };
@@ -65,7 +74,7 @@ prefix '/validation' => sub {
         my $username = params->{username};
         if(!verify_username($username)) {
             status 400;
-            return Lopt::Model::Exception->new(400, "Username '$username' does not exist or cannot be used to run a task in the current state of its account.")->get_hash();
+            return Lopt::Model::Exception->new(400, sprintf(INVALID_USERNAME_TASK_ERROR, $username))->get_hash();
         }
         return status 204;
     };
@@ -76,16 +85,15 @@ prefix '/validation' => sub {
         my $id = params->{id};
         if(!validate_id($id)) {
             status 400;
-            return Lopt::Model::Exception->new(400, "Invalid ID.")->get_hash();
+            return Lopt::Model::Exception->new(400, INVALID_ID)->get_hash();
         }
 
         my $repository = Lopt::Service::TaskRepository->new($id);
         my $task = $repository->fetch();
         if(!defined $task) {
             status 400;
-            return Lopt::Model::Exception->new(400, "No task found with ID $id.")->get_hash();
+            return Lopt::Model::Exception->new(400, sprintf(NO_TASK_FOUND, $id))->get_hash();
         }
-
         return status 204;
     };
 

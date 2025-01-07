@@ -13,26 +13,31 @@ use Lopt::Controllers::Utils qw(
     get_banned_method_message
 );
 
+use constant {
+    NO_USERS_BY_APP_ERR => "No users created by Lopt found."
+};
+
 prefix '/users' => sub {
     post '' => sub {
         debug(get_debug_message(request));
 
         my $user_model = Lopt::Model::User->new(from_json(request->body));
-        if($user_model->check_validity()) {
-            debug(get_success_message(request));
+        if(!$user_model->check_validity()) {
+            warning(get_warning_message(request));
+            status 400;
+            return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
+        }
 
-            my $repository = Lopt::Service::UserRepository->new($user_model->data());
-            if($repository->create()) {
-                status 201;
-                return;
-            }
+        debug(get_success_message(request));
+        my $repository = Lopt::Service::UserRepository->new($user_model->data());
+        if(!$repository->create()) {
             warning(get_warning_message(request));
             status 400;
             return Lopt::Model::Exception->new(400, $repository->error_message())->get_hash();
         }
-        warning(get_warning_message(request));
-        status 400;
-        return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
+
+        status 201;
+        return $user_model->data();
     };
 
     get '' => sub {
@@ -43,7 +48,7 @@ prefix '/users' => sub {
 
         warning(get_warning_message(request));
         status 404;
-        return Lopt::Model::Exception->new(404, "No users created by Lopt found.")->get_hash();
+        return Lopt::Model::Exception->new(404, NO_USERS_BY_APP_ERR)->get_hash();
     };
 
     del '/:username' => sub {
@@ -52,17 +57,19 @@ prefix '/users' => sub {
         my $username = params->{username};
         my $posted_data = from_json(request->body);
         my $user_model = Lopt::Model::UserDeletion->new($posted_data);
-        if($user_model->check_validity()) {
-            debug(get_success_message(request));
-            my $repository = Lopt::Service::UserRepository->new($user_model->data(), $username);
-            return status 204 if $repository->delete();
+        if(!$user_model->check_validity()) {
             warning(get_warning_message(request));
             status 400;
-            return Lopt::Model::Exception->new(400, $repository->error_message())->get_hash();
+            return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
         }
+
+        debug(get_success_message(request));
+        my $repository = Lopt::Service::UserRepository->new($user_model->data(), $username);
+        return status 204 if $repository->delete();
+
         warning(get_warning_message(request));
         status 400;
-        return Lopt::Model::Exception->new(400, $user_model->error_message())->get_hash();
+        return Lopt::Model::Exception->new(400, $repository->error_message())->get_hash();
     };
 
     # ban methods on /users
