@@ -20,6 +20,7 @@ our @EXPORT = qw(
     $MONGO_DB_NAME
     $MONGO_TASKS_COLLECTION_NAME
     $MONGO_LAST_TASK_COLLECTION_NAME
+    $WORKSPACE_DIR
 );
 
 our $NO_PROCESS_PID = -1;
@@ -41,5 +42,7 @@ our $MONGO_URL = 'mongodb://127.0.0.1:27017';
 our $MONGO_DB_NAME = 'taskexecutor';
 our $MONGO_TASKS_COLLECTION_NAME = 'tasks';
 our $MONGO_LAST_TASK_COLLECTION_NAME = 'lasttasks';
+
+our $WORKSPACE_DIR = '/WORKSPACE';
 
 1;
