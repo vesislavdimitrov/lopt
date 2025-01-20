@@ -82,7 +82,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_LAUNCHPAD, {
     createGetTasksTile: function (horizontalLayout) {
         const oController = this.getController();
         const getTasksTile = new sap.m.GenericTile({
-            header: "Tasks Listing",
+            header: "Browse Tasks",
             subheader: "Get  a listing of all tasks",
             failedText: ACTION_UNAVAILABLE
         });
@@ -128,7 +128,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_LAUNCHPAD, {
     createGetUsersTile: function (horizontalLayout) {
         const oController = this.getController();
         const getUsersTile = new sap.m.GenericTile({
-            header: "Users Listing",
+            header: "Browse Users",
             subheader: "Get a listing of all users",
             failedText: ACTION_UNAVAILABLE
         });
@@ -153,7 +153,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_LAUNCHPAD, {
         const oController = this.getController();
         const uploadScriptTile = new sap.m.GenericTile({
             header: "Upload Scripts",
-            subheader: "Upload content the local device",
+            subheader: "Upload content from the local device",
             failedText: ACTION_UNAVAILABLE
         });
         uploadScriptTile

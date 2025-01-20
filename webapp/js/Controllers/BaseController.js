@@ -67,12 +67,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
             this.getFirstChildViewController().getRouter().navTo(route, args);
         },
 
-        navToWithUpload: function (route, value) {
-            this.getFirstChildViewController().getRouter().navTo(route);
-            this.globalById("taskEditorCommandInput").setValue(value);
-            this.globalById("taskEditorCommandInput").setEnabled(false);
-        },
-
         passModel: function (obj) {
             const ob = {
                 obj: obj

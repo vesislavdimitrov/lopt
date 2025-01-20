@@ -39,11 +39,11 @@ const TASK_EXECUTOR_CLIENT_PAGE_UPLOAD_SCRIPT = "Lopt.Pages.UploadScript";
 const TASK_EXECUTOR_CLIENT_PAGE_ONGOING_TASK_TITLE = "Monitoring of an ongoing task";
 const TASK_EXECUTOR_CLIENT_PAGE_LAUNCHPAD_TITLE = "Launchpad";
 const TASK_EXECUTOR_CLIENT_PAGE_CREATE_TASK_TITLE = "Create Task";
-const TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS_TITLE = "Tasks Listing";
+const TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS_TITLE = "Tasks";
 const TASK_EXECUTOR_CLIENT_PAGE_TASK_DETAILS_TITLE = "Task Details";
 const TASK_EXECUTOR_CLIENT_PAGE_UPDATE_TASK_TITLE = "Update Task";
 const TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER_TITLE = "Create User";
-const TASK_EXECUTOR_CLIENT_PAGE_GET_USERS_TITLE = "Users Listing";
+const TASK_EXECUTOR_CLIENT_PAGE_GET_USERS_TITLE = "Users";
 const TASK_EXECUTOR_CLIENT_PAGE_UPLOAD_SCRIPT_TITLE = "Upload Script";
 
 const TASK_EXECUTOR_CLIENT_VIEW_MAIN = "Lopt.Views.Main";
@@ -140,7 +140,7 @@ const NAV_CONTENT = [
         id: NAV_GET_TASKS,
         route: ROUTING_METADATA_CONFIG.routing.routes[NAV_GET_TASKS].pattern,
         icon: "sap-icon://activity-items",
-        text: "Tasks Listing"
+        text: "Browse Tasks"
     },
     {
         id: NAV_CREATE_USER,
@@ -152,7 +152,7 @@ const NAV_CONTENT = [
         id: NAV_GET_USERS,
         route: ROUTING_METADATA_CONFIG.routing.routes[NAV_GET_USERS].pattern,
         icon: "sap-icon://account",
-        text: "Users Listing"
+        text: "Browse Users"
     },
     {
         id: NAV_UPLOAD_SCRIPT,
@@ -183,3 +183,4 @@ const THEMES = [
 
 const DEFAULT_THEME = THEMES[0].id;
 const SAVED_THEME_STORAGE_PREFIX = "loptSavedStorage";
+const WORKSPACE_ENV_VAR_KEY = 'WORKSPACE';

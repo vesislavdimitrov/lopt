@@ -123,7 +123,16 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_UPLOAD_SCRIPT, {
             type: sap.m.ButtonType.Emphasized,
             press: function () {
                 oController.uploadFile(function(fileName) {
-                    oController.navToWithUpload(NAV_CREATE_TASK, `$\{WORKSPACE\}/${fileName}`);
+                    oController.navTo(NAV_CREATE_TASK);
+                    thisView
+                        .getController()
+                        .globalById("taskEditorCommandInput")
+                        // should be exported by server
+                        .setValue(`$\{${WORKSPACE_ENV_VAR_KEY}\}/${fileName}`);
+                    thisView
+                        .getController()
+                        .globalById("taskEditorCommandInput")
+                        .setEnabled(false);
                 });
             }
         });

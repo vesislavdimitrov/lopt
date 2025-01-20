@@ -35,7 +35,9 @@ prefix '/tasks' => sub {
             status 400;
             return Lopt::Model::Exception->new(
                 400,
-                "Cannot create task: Username '" . $task_model->data()->{'username'} . "' does not exist or cannot be used to run a task in the current state of its account."
+                "Cannot create task: Username '"
+                . $task_model->data()->{'username'}
+                ."' does not exist or cannot be used to run a task in the current state of its account."
             )->get_hash();
         }
 

@@ -84,7 +84,11 @@ sub execute {
 
     my $exit_code = $self->execute_task();
     $self->persister()->save_last_executed_task({ log_file => $self->log_filename(), exit_code => $exit_code });
-    $self->persister()->save_execution($self->log_dir(), { log_file => './' . basename($self->log_filename()), exit_code => $exit_code });
+    $self->persister()->save_execution(
+        $self->log_dir(),
+        { log_file => './' . basename($self->log_filename()),
+        exit_code => $exit_code }
+    );
 
     $self->log_fh()->close() 
         or die "Could not close file $self->log_filename: $!";

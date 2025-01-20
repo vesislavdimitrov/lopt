@@ -7,11 +7,12 @@ use IO::File;
 use Exporter qw(import);
 use Lopt::Constants;
 
-our @EXPORT = qw(validate_id verify_credentials verify_username);
+our @EXPORT = qw(validate_id verify_credentials verify_username is_shell_script);
 
 sub validate_id {
     my ($id) = @_;
-    return 1;
+    my $uuid_regex = qr/$UUID_PATTERN/;
+    return $id =~ $uuid_regex;
 }
 
 sub verify_credentials {
@@ -50,6 +51,11 @@ sub verify_username {
         return 1 if $userdata[0] eq $username and $userdata[1] =~ /\A!|\$/;
     }
     return 0;
+}
+
+sub is_shell_script {
+    my ($file) = @_;
+    return $file =~ /\.sh$/;
 }
 
 sub _get_shadow_fh {

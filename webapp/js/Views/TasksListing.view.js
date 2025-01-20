@@ -130,8 +130,9 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS, {
     },
 
     changeTasksCount: function (count) {
-        const oController = this.getController();
-        oController.globalById("tasksListingTableHeading").setText("Tasks (" + count + ")");
+        this.getController()
+            .globalById("tasksListingTableHeading")
+            .setText("Tasks created by Lopt (" + count + ")");
     },
 
     createTaskListingButtons: function (row, task) {
