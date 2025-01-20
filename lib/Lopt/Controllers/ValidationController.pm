@@ -56,7 +56,7 @@ prefix '/validation' => sub {
             return status 204;
         };
 
-        get '/:username/nonexistent' => sub {
+        get '/:username/new' => sub {
             debug(get_debug_message(request));
 
             my $username = params->{username};

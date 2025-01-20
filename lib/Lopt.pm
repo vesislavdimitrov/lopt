@@ -5,7 +5,6 @@ use Lopt::Constants;
 use Lopt::Controllers::HomeController;
 use Lopt::Controllers::TaskController;
 use Lopt::Controllers::UserController;
-use Lopt::Controllers::ValidationController;
 use Lopt::Controllers::UploadController;
 use Lopt::Execution::TaskExecution;
 use Cwd;

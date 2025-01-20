@@ -1,4 +1,4 @@
-package Lopt::Service::CrudRepository;
+package Lopt::Service::Repository;
 
 use Dancer2 appname => 'Lopt';
 

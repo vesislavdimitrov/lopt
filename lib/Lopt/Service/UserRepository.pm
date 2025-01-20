@@ -3,7 +3,7 @@ package Lopt::Service::UserRepository;
 use Dancer2 appname => 'Lopt';
 use Lopt::Persistence::Persister;
 
-use parent qw(Lopt::Service::CrudRepository);
+use parent qw(Lopt::Service::Repository);
 
 sub new {
     my ($class, $user, $username) = @_;

@@ -3,7 +3,7 @@ package Lopt::Service::TaskRepository;
 use Dancer2 appname => 'Lopt';
 use Lopt::Persistence::MongoPersister;
 
-use parent qw(Lopt::Service::CrudRepository);
+use parent qw(Lopt::Service::Repository);
 
 sub new {
     my ($class, $task_id, $task) = @_;
