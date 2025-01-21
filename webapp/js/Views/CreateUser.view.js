@@ -1,11 +1,11 @@
-sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_CREATE_USER, {
+sap.ui.jsview(LOPT_VIEW_CREATE_USER, {
     getControllerName: function () {
-        return TASK_EXECUTOR_CLIENT_CONTROLLER_CREATE_USER;
+        return LOPT_CONTROLLER_CREATE_USER;
     },
 
     createContent: function (oController) {
-        const oPage = new sap.m.Page(TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER, {
-            title: TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER_TITLE,
+        const oPage = new sap.m.Page(LOPT_PAGE_CREATE_USER, {
+            title: LOPT_PAGE_CREATE_USER_TITLE,
             showNavButton: true
         });
         oPage
@@ -240,7 +240,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_CREATE_USER, {
 
     loadPage: function () {
         const oController = this.getController();
-        const oPage = oController.globalById(TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER);
+        const oPage = oController.globalById(LOPT_PAGE_CREATE_USER);
         const createUserPageLayout = oController.globalById("createUserPageLayout");
         if (createUserPageLayout) {
             oPage.removeContent(createUserPageLayout);
@@ -253,7 +253,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_CREATE_USER, {
     hideLoading: function () {
         const oController = this.getController();
         const ongoingTaskPage = this.getController().globalById(
-            TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER
+            LOPT_PAGE_CREATE_USER
         );
         if (oController.getApp().getBusy()) {
             oController.getApp().setBusy(false);

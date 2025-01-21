@@ -1,7 +1,7 @@
 sap.ui.define(["./BaseController"], function (BaseController) {
     "use strict";
 
-    return BaseController.extend(TASK_EXECUTOR_CLIENT_CONTROLLER_UPLOAD_SCRIPT, {
+    return BaseController.extend(LOPT_CONTROLLER_UPLOAD_SCRIPT, {
         selectedFile: null,
 
         setSelectedFile: function (file) {
@@ -32,7 +32,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    thisController.globalById(TASK_EXECUTOR_CLIENT_PAGE_UPLOAD_SCRIPT).setBusy(false);
+                    thisController.globalById(LOPT_PAGE_UPLOAD_SCRIPT).setBusy(false);
                     thisController.getView().showSuccessMessageAndCleanFields();
 
                     if (navToCreateTaskCallback) {
@@ -40,7 +40,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                     }
                 },
                 error: function (xhr, status, error) {
-                    thisController.globalById(TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER).setBusy(false);
+                    thisController.globalById(LOPT_PAGE_CREATE_USER).setBusy(false);
                     thisController.getView().showErrorMessageAndCleanFields();
                 }
             });

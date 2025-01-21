@@ -1,7 +1,7 @@
 sap.ui.define(["./BaseController"], function (BaseController) {
     "use strict";
 
-    return BaseController.extend(TASK_EXECUTOR_CLIENT_CONTROLLER_ONGOING_TASK, {
+    return BaseController.extend(LOPT_CONTROLLER_ONGOING_TASK, {
         pageLoaded: function () {
             this.fetchTaskStatus();
         },

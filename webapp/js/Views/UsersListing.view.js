@@ -1,11 +1,11 @@
-sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_GET_USERS, {
+sap.ui.jsview(LOPT_VIEW_GET_USERS, {
     getControllerName: function () {
-        return TASK_EXECUTOR_CLIENT_CONTROLLER_GET_USERS;
+        return LOPT_CONTROLLER_GET_USERS;
     },
 
     createContent: function (oController) {
-        const oPage = new sap.m.Page(TASK_EXECUTOR_CLIENT_PAGE_GET_USERS, {
-            title: TASK_EXECUTOR_CLIENT_PAGE_GET_USERS_TITLE,
+        const oPage = new sap.m.Page(LOPT_PAGE_GET_USERS, {
+            title: LOPT_PAGE_GET_USERS_TITLE,
             showNavButton: true
         });
         oPage
@@ -56,7 +56,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_GET_USERS, {
 
     createUsersListingTable: function () {
         const oController = this.getController();
-        const oPage = oController.globalById(TASK_EXECUTOR_CLIENT_PAGE_GET_USERS);
+        const oPage = oController.globalById(LOPT_PAGE_GET_USERS);
 
         this.destroyOldTable(oPage);
         const oTable = new sap.m.Table("usersListingTable");
@@ -297,7 +297,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_GET_USERS, {
     hideLoading: function () {
         const oController = this.getController();
         const ongoingTaskPage = this.getController().globalById(
-            TASK_EXECUTOR_CLIENT_PAGE_GET_USERS
+            LOPT_PAGE_GET_USERS
         );
         if (oController.getApp().getBusy()) {
             oController.getApp().setBusy(false);

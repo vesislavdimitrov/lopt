@@ -1,7 +1,7 @@
 sap.ui.define(["./BaseController"], function (BaseController) {
     "use strict";
 
-    return BaseController.extend(TASK_EXECUTOR_CLIENT_CONTROLLER_MAIN, {
+    return BaseController.extend(LOPT_CONTROLLER_MAIN, {
         onInit: function () {
             const thisController = this;
             this.applySavedTheme();
@@ -36,50 +36,50 @@ sap.ui.define(["./BaseController"], function (BaseController) {
         createViews: async function () {
             this.getApp().addPage(
                 await sap.ui.core.mvc.JSView.create({
-                    id: TASK_EXECUTOR_CLIENT_VIEW_ONGOING_TASK,
-                    viewName: TASK_EXECUTOR_CLIENT_VIEW_ONGOING_TASK
+                    id: LOPT_VIEW_ONGOING_TASK,
+                    viewName: LOPT_VIEW_ONGOING_TASK
                 })
             );
             this.getApp().addPage(
                 await sap.ui.core.mvc.JSView.create({
-                    id: TASK_EXECUTOR_CLIENT_VIEW_LAUNCHPAD,
-                    viewName: TASK_EXECUTOR_CLIENT_VIEW_LAUNCHPAD
+                    id: LOPT_VIEW_LAUNCHPAD,
+                    viewName: LOPT_VIEW_LAUNCHPAD
                 })
             );
             this.getApp().addPage(
                 await sap.ui.core.mvc.JSView.create({
-                    id: TASK_EXECUTOR_CLIENT_VIEW_TASK_EDITOR,
-                    viewName: TASK_EXECUTOR_CLIENT_VIEW_TASK_EDITOR
+                    id: LOPT_VIEW_TASK_EDITOR,
+                    viewName: LOPT_VIEW_TASK_EDITOR
                 })
             );
             this.getApp().addPage(
                 await sap.ui.core.mvc.JSView.create({
-                    id: TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS,
-                    viewName: TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS
+                    id: LOPT_VIEW_GET_TASKS,
+                    viewName: LOPT_VIEW_GET_TASKS
                 })
             );
             this.getApp().addPage(
                 await sap.ui.core.mvc.JSView.create({
-                    id: TASK_EXECUTOR_CLIENT_VIEW_TASK_DETAILS,
-                    viewName: TASK_EXECUTOR_CLIENT_VIEW_TASK_DETAILS
+                    id: LOPT_VIEW_TASK_DETAILS,
+                    viewName: LOPT_VIEW_TASK_DETAILS
                 })
             );
             this.getApp().addPage(
                 await sap.ui.core.mvc.JSView.create({
-                    id: TASK_EXECUTOR_CLIENT_VIEW_CREATE_USER,
-                    viewName: TASK_EXECUTOR_CLIENT_VIEW_CREATE_USER
+                    id: LOPT_VIEW_CREATE_USER,
+                    viewName: LOPT_VIEW_CREATE_USER
                 })
             );
             this.getApp().addPage(
                 await sap.ui.core.mvc.JSView.create({
-                    id: TASK_EXECUTOR_CLIENT_VIEW_GET_USERS,
-                    viewName: TASK_EXECUTOR_CLIENT_VIEW_GET_USERS
+                    id: LOPT_VIEW_GET_USERS,
+                    viewName: LOPT_VIEW_GET_USERS
                 })
             );
             this.getApp().addPage(
                 await sap.ui.core.mvc.JSView.create({
-                    id: TASK_EXECUTOR_CLIENT_VIEW_UPLOAD_SCRIPT,
-                    viewName: TASK_EXECUTOR_CLIENT_VIEW_UPLOAD_SCRIPT
+                    id: LOPT_VIEW_UPLOAD_SCRIPT,
+                    viewName: LOPT_VIEW_UPLOAD_SCRIPT
                 })
             );
         },
@@ -91,82 +91,82 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                 case NAV_ONGOING_TASK:
                     this.toggleMainPageNav(false);
                     this.getApp().setBusy(true);
-                    this.getApp().to(TASK_EXECUTOR_CLIENT_VIEW_ONGOING_TASK);
+                    this.getApp().to(LOPT_VIEW_ONGOING_TASK);
                     this.getApp().getCurrentPage().loadPage();
-                    this.changeHTMLPageTitle(TASK_EXECUTOR_CLIENT_PAGE_ONGOING_TASK_TITLE);
+                    this.changeHTMLPageTitle(LOPT_PAGE_ONGOING_TASK_TITLE);
                     this.pushCurrentRouteToRouteHistory();
                     break;
                 case NAV_LAUNCHPAD:
                     this.getApp().setBusy(true);
-                    this.getApp().to(TASK_EXECUTOR_CLIENT_VIEW_LAUNCHPAD);
+                    this.getApp().to(LOPT_VIEW_LAUNCHPAD);
                     this.getApp().getCurrentPage().loadPage();
                     // launchpad is the only page that doesn't toggle 'busy'
                     this.getApp().setBusy(false);
                     this.getView().changeSelectedNavKey(routeName);
-                    this.changeHTMLPageTitle(TASK_EXECUTOR_CLIENT_PAGE_LAUNCHPAD_TITLE);
+                    this.changeHTMLPageTitle(LOPT_PAGE_LAUNCHPAD_TITLE);
                     this.pushCurrentRouteToRouteHistory();
                     break;
                 case NAV_CREATE_TASK:
                     this.getApp().setBusy(true);
-                    this.getApp().to(TASK_EXECUTOR_CLIENT_VIEW_TASK_EDITOR);
+                    this.getApp().to(LOPT_VIEW_TASK_EDITOR);
                     this.getApp().getCurrentPage().loadPage(NAV_CREATE_TASK);
                     this.getView().changeSelectedNavKey(routeName);
-                    this.changeHTMLPageTitle(TASK_EXECUTOR_CLIENT_PAGE_CREATE_TASK_TITLE);
+                    this.changeHTMLPageTitle(LOPT_PAGE_CREATE_TASK_TITLE);
                     this.pushCurrentRouteToRouteHistory();
                     break;
                 case NAV_GET_TASKS:
                     this.getApp().setBusy(true);
-                    this.getApp().to(TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS);
+                    this.getApp().to(LOPT_VIEW_GET_TASKS);
                     this.getApp().getCurrentPage().loadPage();
                     this.getView().changeSelectedNavKey(routeName);
-                    this.changeHTMLPageTitle(TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS_TITLE);
+                    this.changeHTMLPageTitle(LOPT_PAGE_GET_TASKS_TITLE);
                     this.pushCurrentRouteToRouteHistory();
                     break;
                 case NAV_TASKS:
                     this.getApp().setBusy(true);
-                    this.getApp().to(TASK_EXECUTOR_CLIENT_VIEW_TASK_DETAILS);
+                    this.getApp().to(LOPT_VIEW_TASK_DETAILS);
                     this.getApp().getCurrentPage().loadPage(args.taskId);
                     this.getView().changeSelectedNavKey(routeName);
-                    this.changeHTMLPageTitle(TASK_EXECUTOR_CLIENT_PAGE_TASK_DETAILS_TITLE);
+                    this.changeHTMLPageTitle(LOPT_PAGE_TASK_DETAILS_TITLE);
                     this.pushCurrentRouteToRouteHistory();
                     break;
                 case NAV_UPDATE_TASK:
                     this.getApp().setBusy(true);
-                    this.getApp().to(TASK_EXECUTOR_CLIENT_VIEW_TASK_EDITOR);
+                    this.getApp().to(LOPT_VIEW_TASK_EDITOR);
                     this.getApp().getCurrentPage().loadPage(NAV_UPDATE_TASK, args.taskId);
                     this.getView().changeSelectedNavKey(routeName);
-                    this.changeHTMLPageTitle(TASK_EXECUTOR_CLIENT_PAGE_UPDATE_TASK_TITLE);
+                    this.changeHTMLPageTitle(LOPT_PAGE_UPDATE_TASK_TITLE);
                     this.pushCurrentRouteToRouteHistory();
                     break;
                 case NAV_CREATE_USER:
                     this.getApp().setBusy(true);
-                    this.getApp().to(TASK_EXECUTOR_CLIENT_VIEW_CREATE_USER);
+                    this.getApp().to(LOPT_VIEW_CREATE_USER);
                     this.getApp().getCurrentPage().loadPage(NAV_CREATE_USER);
                     this.getView().changeSelectedNavKey(routeName);
-                    this.changeHTMLPageTitle(TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER_TITLE);
+                    this.changeHTMLPageTitle(LOPT_PAGE_CREATE_USER_TITLE);
                     this.pushCurrentRouteToRouteHistory();
                     break;
                 case NAV_GET_USERS:
                     this.getApp().setBusy(true);
-                    this.getApp().to(TASK_EXECUTOR_CLIENT_VIEW_GET_USERS);
+                    this.getApp().to(LOPT_VIEW_GET_USERS);
                     this.getApp().getCurrentPage().loadPage();
                     this.getView().changeSelectedNavKey(routeName);
-                    this.changeHTMLPageTitle(TASK_EXECUTOR_CLIENT_PAGE_GET_USERS_TITLE);
+                    this.changeHTMLPageTitle(LOPT_PAGE_GET_USERS_TITLE);
                     this.pushCurrentRouteToRouteHistory();
                     break;
                 case NAV_UPLOAD_SCRIPT:
                     this.getApp().setBusy(true);
-                    this.getApp().to(TASK_EXECUTOR_CLIENT_VIEW_UPLOAD_SCRIPT);
+                    this.getApp().to(LOPT_VIEW_UPLOAD_SCRIPT);
                     this.getApp().getCurrentPage().loadPage();
                     this.getView().changeSelectedNavKey(routeName);
-                    this.changeHTMLPageTitle(TASK_EXECUTOR_CLIENT_PAGE_UPLOAD_SCRIPT_TITLE);
+                    this.changeHTMLPageTitle(LOPT_PAGE_UPLOAD_SCRIPT_TITLE);
                     this.pushCurrentRouteToRouteHistory();
                     break;
             }
         },
 
         sideNavToggleClicked: function () {
-            sap.ui.getCore().byId(TASK_EXECUTOR_CLIENT_PAGE_MAIN).toggleSideContentMode();
+            sap.ui.getCore().byId(LOPT_PAGE_MAIN).toggleSideContentMode();
         },
 
         changeHTMLPageTitle: function (title) {

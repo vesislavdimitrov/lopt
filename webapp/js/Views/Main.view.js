@@ -1,10 +1,10 @@
-sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_MAIN, {
+sap.ui.jsview(LOPT_VIEW_MAIN, {
     getControllerName: function () {
-        return TASK_EXECUTOR_CLIENT_CONTROLLER_MAIN;
+        return LOPT_CONTROLLER_MAIN;
     },
 
     createContent: function (oController) {
-        const toolPage = new sap.tnt.ToolPage(TASK_EXECUTOR_CLIENT_PAGE_MAIN, {
+        const toolPage = new sap.tnt.ToolPage(LOPT_PAGE_MAIN, {
             sideExpanded: false
         });
 
@@ -121,7 +121,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_MAIN, {
     },
 
     createToolPageMainContent: function (toolPage) {
-        const oApp = new sap.m.App(TASK_EXECUTOR_CLIENT_APP);
+        const oApp = new sap.m.App(LOPT_APP);
         oApp.setBusyIndicatorDelay(0);
         toolPage.addMainContent(oApp);
     },

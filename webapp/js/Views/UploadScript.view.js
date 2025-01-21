@@ -1,6 +1,6 @@
-sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_UPLOAD_SCRIPT, {
+sap.ui.jsview(LOPT_VIEW_UPLOAD_SCRIPT, {
     getControllerName: function () {
-        return TASK_EXECUTOR_CLIENT_CONTROLLER_UPLOAD_SCRIPT;
+        return LOPT_CONTROLLER_UPLOAD_SCRIPT;
     },
 
     createContent: function (oController) {
@@ -10,8 +10,8 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_UPLOAD_SCRIPT, {
     },
 
     createPage: function (oController) {
-        const oPage = new sap.m.Page(TASK_EXECUTOR_CLIENT_PAGE_UPLOAD_SCRIPT, {
-            title: TASK_EXECUTOR_CLIENT_PAGE_UPLOAD_SCRIPT_TITLE,
+        const oPage = new sap.m.Page(LOPT_PAGE_UPLOAD_SCRIPT, {
+            title: LOPT_PAGE_UPLOAD_SCRIPT_TITLE,
             showNavButton: true
         });
 
@@ -27,7 +27,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_UPLOAD_SCRIPT, {
         const oBlockLayout = this.createBlockLayoutElement();
         const blockLayoutRow = new sap.ui.layout.BlockLayoutRow();
         const blockLayoutCell = new sap.ui.layout.BlockLayoutCell({
-            title: "Select a script to upload from the local device"
+            title: "Upload"
         });
 
         this.createSuccessMessageStrip(blockLayoutCell);
@@ -169,7 +169,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_UPLOAD_SCRIPT, {
 
     hideLoading: function () {
         const oController = this.getController();
-        const ongoingTaskPage = oController.globalById(TASK_EXECUTOR_CLIENT_PAGE_UPLOAD_SCRIPT);
+        const ongoingTaskPage = oController.globalById(LOPT_PAGE_UPLOAD_SCRIPT);
         if (oController.getApp().getBusy()) {
             oController.getApp().setBusy(false);
         }

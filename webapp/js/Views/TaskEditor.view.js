@@ -1,10 +1,10 @@
-sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_TASK_EDITOR, {
+sap.ui.jsview(LOPT_VIEW_TASK_EDITOR, {
     getControllerName: function () {
-        return TASK_EXECUTOR_CLIENT_CONTROLLER_TASK_EDITOR;
+        return LOPT_CONTROLLER_TASK_EDITOR;
     },
 
     createContent: function (oController) {
-        const oPage = new sap.m.Page(TASK_EXECUTOR_CLIENT_PAGE_TASK_EDITOR, {
+        const oPage = new sap.m.Page(LOPT_PAGE_TASK_EDITOR, {
             showNavButton: true
         });
         oPage
@@ -428,7 +428,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_TASK_EDITOR, {
 
     loadPage: function (pageType, taskId) {
         const oController = this.getController();
-        const oPage = oController.globalById(TASK_EXECUTOR_CLIENT_PAGE_TASK_EDITOR);
+        const oPage = oController.globalById(LOPT_PAGE_TASK_EDITOR);
         const taskEditorPageLayout = oController.globalById("taskEditorPageLayout");
         if (taskEditorPageLayout) {
             oPage.removeContent(taskEditorPageLayout);
@@ -446,7 +446,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_TASK_EDITOR, {
     hideLoading: function () {
         const oController = this.getController();
         const ongoingTaskPage = this.getController().globalById(
-            TASK_EXECUTOR_CLIENT_PAGE_TASK_EDITOR
+            LOPT_PAGE_TASK_EDITOR
         );
         if (oController.getApp().getBusy()) {
             oController.getApp().setBusy(false);

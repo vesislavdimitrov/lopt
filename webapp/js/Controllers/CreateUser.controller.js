@@ -1,7 +1,7 @@
 sap.ui.define(["./BaseController"], function (BaseController) {
     "use strict";
 
-    return BaseController.extend(TASK_EXECUTOR_CLIENT_CONTROLLER_CREATE_USER, {
+    return BaseController.extend(LOPT_CONTROLLER_CREATE_USER, {
         pageLoaded: function () {
             this.checkRestApiAvailability();
         },
@@ -17,7 +17,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             this.saveModel();
             const validationSuccessful = this.validateUser();
             if (validationSuccessful) {
-                this.globalById(TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER).setBusy(true);
+                this.globalById(LOPT_PAGE_CREATE_USER).setBusy(true);
                 this.sendUser();
                 return;
             }
@@ -32,14 +32,14 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                 url: CONFIG.API_BASE_URL + USERS_PATH,
                 data: JSON.stringify(userToSend),
                 success: function (result) {
-                    thisController.globalById(TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER).setBusy(false);
+                    thisController.globalById(LOPT_PAGE_CREATE_USER).setBusy(false);
                     thisController.getView().showSuccessMessageAndCleanFields();
                 },
                 error: function (xhr, status, error) {
-                    thisController.globalById(TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER).setBusy(false);
+                    thisController.globalById(LOPT_PAGE_CREATE_USER).setBusy(false);
                     if (xhr.readyState != 4 || xhr.status != 400) {
-                        thisController.taskExecutorNotAvailable(
-                            "the API has returned an unexpected response or might be down"
+                        thisController.serverNotAvailable(
+                            "the server has returned an unexpected response or might be down"
                         );
                     } else {
                         const result = JSON.parse(xhr.responseText);
@@ -85,8 +85,8 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {
-                        thisController.taskExecutorNotAvailable(
-                            "the API base URL has returned an unexpected response"
+                        thisController.serverNotAvailable(
+                            "the server has returned an unexpected response"
                         );
                         return;
                     }
@@ -94,12 +94,12 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                     thisController.passModel(new UserObjectModel({}));
                 },
                 error: function (xhr, status, error) {
-                    thisController.taskExecutorNotAvailable("the API base URL cannot be reached");
+                    thisController.serverNotAvailable("the server cannot be reached");
                 }
             });
         },
 
-        taskExecutorNotAvailable: function (message) {
+        serverNotAvailable: function (message) {
             const obj = {
                 message: "The Lopt REST API is currently unavailable (" + message + ")."
             };

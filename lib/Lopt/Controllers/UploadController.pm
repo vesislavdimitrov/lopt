@@ -14,6 +14,7 @@ use Lopt::Controllers::Utils qw(
     get_debug_message
     get_warning_message
     get_banned_method_message
+    get_success_message
 );
 
 use constant {

@@ -23,49 +23,49 @@ const TASK_STATES = {
 
 const ACTION_UNAVAILABLE = "Action unavailable";
 
-const TASK_EXECUTOR_CLIENT_APP = "Lopt.App";
-const TASK_EXECUTOR_CLIENT_COMPONENT = "Lopt";
+const LOPT_APP = "Lopt.App";
+const LOPT_COMPONENT = "Lopt";
 
-const TASK_EXECUTOR_CLIENT_PAGE_MAIN = "Lopt.Pages.Main";
-const TASK_EXECUTOR_CLIENT_PAGE_ONGOING_TASK = "Lopt.Pages.OngoingTask";
-const TASK_EXECUTOR_CLIENT_PAGE_LAUNCHPAD = "Lopt.Pages.Launchpad";
-const TASK_EXECUTOR_CLIENT_PAGE_TASK_EDITOR = "Lopt.Pages.TaskEditor";
-const TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS = "Lopt.Pages.TasksListing";
-const TASK_EXECUTOR_CLIENT_PAGE_TASK_DETAILS = "Lopt.Pages.TaskDetails";
-const TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER = "Lopt.Pages.CreateUser";
-const TASK_EXECUTOR_CLIENT_PAGE_GET_USERS = "Lopt.Pages.UsersListing";
-const TASK_EXECUTOR_CLIENT_PAGE_UPLOAD_SCRIPT = "Lopt.Pages.UploadScript";
+const LOPT_PAGE_MAIN = "Lopt.Pages.Main";
+const LOPT_PAGE_ONGOING_TASK = "Lopt.Pages.OngoingTask";
+const LOPT_PAGE_LAUNCHPAD = "Lopt.Pages.Launchpad";
+const LOPT_PAGE_TASK_EDITOR = "Lopt.Pages.TaskEditor";
+const LOPT_PAGE_GET_TASKS = "Lopt.Pages.TasksListing";
+const LOPT_PAGE_TASK_DETAILS = "Lopt.Pages.TaskDetails";
+const LOPT_PAGE_CREATE_USER = "Lopt.Pages.CreateUser";
+const LOPT_PAGE_GET_USERS = "Lopt.Pages.UsersListing";
+const LOPT_PAGE_UPLOAD_SCRIPT = "Lopt.Pages.UploadScript";
 
-const TASK_EXECUTOR_CLIENT_PAGE_ONGOING_TASK_TITLE = "Monitoring of an ongoing task";
-const TASK_EXECUTOR_CLIENT_PAGE_LAUNCHPAD_TITLE = "Launchpad";
-const TASK_EXECUTOR_CLIENT_PAGE_CREATE_TASK_TITLE = "Create Task";
-const TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS_TITLE = "Tasks";
-const TASK_EXECUTOR_CLIENT_PAGE_TASK_DETAILS_TITLE = "Task Details";
-const TASK_EXECUTOR_CLIENT_PAGE_UPDATE_TASK_TITLE = "Update Task";
-const TASK_EXECUTOR_CLIENT_PAGE_CREATE_USER_TITLE = "Create User";
-const TASK_EXECUTOR_CLIENT_PAGE_GET_USERS_TITLE = "Users";
-const TASK_EXECUTOR_CLIENT_PAGE_UPLOAD_SCRIPT_TITLE = "Upload Script";
+const LOPT_PAGE_ONGOING_TASK_TITLE = "Monitoring of an ongoing task";
+const LOPT_PAGE_LAUNCHPAD_TITLE = "Launchpad";
+const LOPT_PAGE_CREATE_TASK_TITLE = "Create Task";
+const LOPT_PAGE_GET_TASKS_TITLE = "Tasks";
+const LOPT_PAGE_TASK_DETAILS_TITLE = "Task Details";
+const LOPT_PAGE_UPDATE_TASK_TITLE = "Update Task";
+const LOPT_PAGE_CREATE_USER_TITLE = "Create User";
+const LOPT_PAGE_GET_USERS_TITLE = "Users";
+const LOPT_PAGE_UPLOAD_SCRIPT_TITLE = "Upload Script";
 
-const TASK_EXECUTOR_CLIENT_VIEW_MAIN = "Lopt.Views.Main";
-const TASK_EXECUTOR_CLIENT_VIEW_ONGOING_TASK = "Lopt.Views.OngoingTask";
-const TASK_EXECUTOR_CLIENT_VIEW_LAUNCHPAD = "Lopt.Views.Launchpad";
-const TASK_EXECUTOR_CLIENT_VIEW_TASK_EDITOR = "Lopt.Views.TaskEditor";
-const TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS = "Lopt.Views.TasksListing";
-const TASK_EXECUTOR_CLIENT_VIEW_TASK_DETAILS = "Lopt.Views.TaskDetails";
-const TASK_EXECUTOR_CLIENT_VIEW_CREATE_USER = "Lopt.Views.CreateUser";
-const TASK_EXECUTOR_CLIENT_VIEW_GET_USERS = "Lopt.Views.UsersListing";
-const TASK_EXECUTOR_CLIENT_VIEW_UPLOAD_SCRIPT = "Lopt.Views.UploadScript";
+const LOPT_VIEW_MAIN = "Lopt.Views.Main";
+const LOPT_VIEW_ONGOING_TASK = "Lopt.Views.OngoingTask";
+const LOPT_VIEW_LAUNCHPAD = "Lopt.Views.Launchpad";
+const LOPT_VIEW_TASK_EDITOR = "Lopt.Views.TaskEditor";
+const LOPT_VIEW_GET_TASKS = "Lopt.Views.TasksListing";
+const LOPT_VIEW_TASK_DETAILS = "Lopt.Views.TaskDetails";
+const LOPT_VIEW_CREATE_USER = "Lopt.Views.CreateUser";
+const LOPT_VIEW_GET_USERS = "Lopt.Views.UsersListing";
+const LOPT_VIEW_UPLOAD_SCRIPT = "Lopt.Views.UploadScript";
 
-const TASK_EXECUTOR_CLIENT_BASE_CONTROLLER = "Lopt.Controllers.Base";
-const TASK_EXECUTOR_CLIENT_CONTROLLER_MAIN = "Lopt.Controllers.Main";
-const TASK_EXECUTOR_CLIENT_CONTROLLER_ONGOING_TASK = "Lopt.Controllers.OngoingTask";
-const TASK_EXECUTOR_CLIENT_CONTROLLER_LAUNCHPAD = "Lopt.Controllers.Launchpad";
-const TASK_EXECUTOR_CLIENT_CONTROLLER_TASK_EDITOR = "Lopt.Controllers.TaskEditor";
-const TASK_EXECUTOR_CLIENT_CONTROLLER_GET_TASKS = "Lopt.Controllers.TasksListing";
-const TASK_EXECUTOR_CLIENT_CONTROLLER_TASK_DETAILS = "Lopt.Controllers.TaskDetails";
-const TASK_EXECUTOR_CLIENT_CONTROLLER_CREATE_USER = "Lopt.Controllers.CreateUser";
-const TASK_EXECUTOR_CLIENT_CONTROLLER_GET_USERS = "Lopt.Controllers.UsersListing";
-const TASK_EXECUTOR_CLIENT_CONTROLLER_UPLOAD_SCRIPT = "Lopt.Controllers.UploadScript";
+const LOPT_BASE_CONTROLLER = "Lopt.Controllers.Base";
+const LOPT_CONTROLLER_MAIN = "Lopt.Controllers.Main";
+const LOPT_CONTROLLER_ONGOING_TASK = "Lopt.Controllers.OngoingTask";
+const LOPT_CONTROLLER_LAUNCHPAD = "Lopt.Controllers.Launchpad";
+const LOPT_CONTROLLER_TASK_EDITOR = "Lopt.Controllers.TaskEditor";
+const LOPT_CONTROLLER_GET_TASKS = "Lopt.Controllers.TasksListing";
+const LOPT_CONTROLLER_TASK_DETAILS = "Lopt.Controllers.TaskDetails";
+const LOPT_CONTROLLER_CREATE_USER = "Lopt.Controllers.CreateUser";
+const LOPT_CONTROLLER_GET_USERS = "Lopt.Controllers.UsersListing";
+const LOPT_CONTROLLER_UPLOAD_SCRIPT = "Lopt.Controllers.UploadScript";
 
 const SIDE_NAV_TOGGLE_BUTTON = "sideNavigationToggleButton";
 const NAV_HOME = "home";
@@ -82,10 +82,10 @@ const NAV_UPLOAD_SCRIPT = 'uploadScript'
 
 const ROUTING_METADATA_CONFIG = {
     rootView: {
-        viewName: TASK_EXECUTOR_CLIENT_VIEW_MAIN,
+        viewName: LOPT_VIEW_MAIN,
         type: "JS",
         async: true,
-        id: TASK_EXECUTOR_CLIENT_VIEW_MAIN
+        id: LOPT_VIEW_MAIN
     },
     routing: {
         routes: {

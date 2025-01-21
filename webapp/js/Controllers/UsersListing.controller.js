@@ -1,7 +1,7 @@
 sap.ui.define(["./BaseController"], function (BaseController) {
     "use strict";
 
-    return BaseController.extend(TASK_EXECUTOR_CLIENT_CONTROLLER_GET_USERS, {
+    return BaseController.extend(LOPT_CONTROLLER_GET_USERS, {
         pageLoaded: function () {
             this.checkRestApiAvailability();
         },
@@ -39,8 +39,8 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                     }
 
                     if (xhr.readyState != 4) {
-                        thisController.taskExecutorNotAvailable(
-                            "the API has returned an unexpected response or might be down"
+                        thisController.serverNotAvailable(
+                            "the serer has returned an unexpected response or might be down"
                         );
                         thisController
                             .getView()
@@ -99,8 +99,8 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {
-                        thisController.taskExecutorNotAvailable(
-                            "the API base URL has returned an unexpected response"
+                        thisController.serverNotAvailable(
+                            "the server has returned an unexpected response"
                         );
                         return;
                     }
@@ -108,12 +108,12 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                     thisController.fetchAllUsers();
                 },
                 error: function (xhr, status, error) {
-                    thisController.taskExecutorNotAvailable("the API base URL cannot be reached");
+                    thisController.serverNotAvailable("the serer cannot be reached");
                 }
             });
         },
 
-        taskExecutorNotAvailable: function (message) {
+        serverNotAvailable: function (message) {
             this.displayFatalErrorMessage(
                 "The Lopt REST API is currently unavailable (" + message + ")."
             );

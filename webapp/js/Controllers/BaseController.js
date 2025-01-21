@@ -1,7 +1,7 @@
 sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
     "use strict";
 
-    return Controller.extend(TASK_EXECUTOR_CLIENT_BASE_CONTROLLER, {
+    return Controller.extend(LOPT_BASE_CONTROLLER, {
         toggleMainPageNav: function (toggle) {
             const sideNavigationToggleButton = this.globalById(SIDE_NAV_TOGGLE_BUTTON);
             sideNavigationToggleButton.setEnabled(toggle);
@@ -19,15 +19,15 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
         },
 
         getApp: function () {
-            return sap.ui.getCore().byId(TASK_EXECUTOR_CLIENT_APP);
+            return sap.ui.getCore().byId(LOPT_APP);
         },
 
         getMainPage: function () {
-            return this.globalById(TASK_EXECUTOR_CLIENT_PAGE_MAIN);
+            return this.globalById(LOPT_PAGE_MAIN);
         },
 
         getFirstChildViewController: function () {
-            return this.globalById(TASK_EXECUTOR_CLIENT_VIEW_ONGOING_TASK).getController();
+            return this.globalById(LOPT_VIEW_ONGOING_TASK).getController();
         },
 
         getCurrentRouteName: function () {

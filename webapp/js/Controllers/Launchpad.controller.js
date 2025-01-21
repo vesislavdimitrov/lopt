@@ -1,7 +1,7 @@
 sap.ui.define(["./BaseController"], function (BaseController) {
     "use strict";
 
-    return BaseController.extend(TASK_EXECUTOR_CLIENT_CONTROLLER_LAUNCHPAD, {
+    return BaseController.extend(LOPT_CONTROLLER_LAUNCHPAD, {
         pageLoaded: function () {
             this.getView().hideLoading();
             this.checkRestApiAvailability();
@@ -14,22 +14,22 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {
-                        thisController.taskExecutorNotAvailable(
-                            "the API base URL has returned an unexpected response"
+                        thisController.serverNotAvailable(
+                            "the server has returned an unexpected response"
                         );
                         return;
                     }
                     thisController.passModel(new LaunchpadObjectModel({}));
                 },
                 error: function (xhr, status, error) {
-                    thisController.taskExecutorNotAvailable("the API base URL cannot be reached");
+                    thisController.serverNotAvailable("the server cannot be reached");
                 }
             });
         },
 
-        taskExecutorNotAvailable: function (message) {
+        serverNotAvailable: function (message) {
             const obj = {
-                message: "The TaskExecutor REST API is currently unavailable (" + message + ")."
+                message: "The Lopt REST API is currently unavailable (" + message + ")."
             };
             this.passModel(new LaunchpadObjectModel(obj));
         }

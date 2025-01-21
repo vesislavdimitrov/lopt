@@ -1,7 +1,7 @@
 sap.ui.define(["./BaseController"], function (BaseController) {
     "use strict";
 
-    return BaseController.extend(TASK_EXECUTOR_CLIENT_CONTROLLER_GET_TASKS, {
+    return BaseController.extend(LOPT_CONTROLLER_GET_TASKS, {
         pageLoaded: function () {
             this.checkRestApiAvailability();
         },
@@ -32,8 +32,8 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                     }
 
                     if (xhr.readyState != 4) {
-                        thisController.taskExecutorNotAvailable(
-                            "the API has returned an unexpected response or might be down"
+                        thisController.serverNotAvailable(
+                            "the serer has returned an unexpected response or might be down"
                         );
                         thisController
                             .getView()
@@ -68,7 +68,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             const modelObj = this.getView().getModel().getProperty("/obj");
             const task = modelObj.getTask();
-            const getTasksPage = this.globalById(TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS);
+            const getTasksPage = this.globalById(LOPT_PAGE_GET_TASKS);
             const executeTaskDialog = this.globalById("getTasksExecuteTaskDialog");
 
             let password = "";
@@ -91,7 +91,6 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                             executeTaskDialog.setBusy(false);
                             executeTaskDialog.close();
                         }
-
                         if (getTasksPage.isBusy()) {
                             getTasksPage.setBusy(false);
                         }
@@ -104,14 +103,12 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                         executeTaskDialog.setBusy(false);
                         executeTaskDialog.close();
                     }
-
                     if (getTasksPage.isBusy()) {
                         getTasksPage.setBusy(false);
                     }
-
                     if (xhr.readyState != 4) {
-                        thisController.taskExecutorNotAvailable(
-                            "the API has returned an unexpected response or might be down"
+                        thisController.serverNotAvailable(
+                            "the server has returned an unexpected response or might be down"
                         );
                     } else {
                         const result = JSON.parse(xhr.responseText);
@@ -172,8 +169,8 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {
-                        thisController.taskExecutorNotAvailable(
-                            "the API base URL has returned an unexpected response"
+                        thisController.serverNotAvailable(
+                            "the server has returned an unexpected response"
                         );
                         return;
                     }
@@ -181,12 +178,12 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                     thisController.fetchAllTasks();
                 },
                 error: function (xhr, status, error) {
-                    thisController.taskExecutorNotAvailable("the API base URL cannot be reached");
+                    thisController.serverNotAvailable("the server cannot be reached");
                 }
             });
         },
 
-        taskExecutorNotAvailable: function (message) {
+        serverNotAvailable: function (message) {
             this.displayFatalErrorMessage(
                 "The Lopt REST API is currently unavailable (" + message + ")."
             );

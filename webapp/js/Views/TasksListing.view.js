@@ -1,11 +1,11 @@
-sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS, {
+sap.ui.jsview(LOPT_VIEW_GET_TASKS, {
     getControllerName: function () {
-        return TASK_EXECUTOR_CLIENT_CONTROLLER_GET_TASKS;
+        return LOPT_CONTROLLER_GET_TASKS;
     },
 
     createContent: function (oController) {
-        const oPage = new sap.m.Page(TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS, {
-            title: TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS_TITLE,
+        const oPage = new sap.m.Page(LOPT_PAGE_GET_TASKS, {
+            title: LOPT_PAGE_GET_TASKS_TITLE,
             showNavButton: true
         });
         oPage
@@ -57,7 +57,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS, {
 
     createTasksListingTable: function () {
         const oController = this.getController();
-        const oPage = oController.globalById(TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS);
+        const oPage = oController.globalById(LOPT_PAGE_GET_TASKS);
 
         this.destroyOldTable(oPage);
         const oTable = new sap.m.Table("tasksListingTable");
@@ -84,7 +84,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS, {
 
     createTasksListingTableColumns: function (oTable) {
         const idColumn = new sap.m.Column({ vAlign: sap.ui.core.VerticalAlign.Middle });
-        idColumn.setWidth("10%").setHeader(new sap.m.Text({ text: "ID" }));
+        idColumn.setWidth("30%").setHeader(new sap.m.Text({ text: "ID" }));
         const descriptionColumn = new sap.m.Column({ vAlign: sap.ui.core.VerticalAlign.Middle });
         descriptionColumn.setWidth("45%").setHeader(new sap.m.Text({ text: "Description" }));
         const actionsColumn = new sap.m.Column({
@@ -311,7 +311,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS, {
 
     showInitTaskExecution: function () {
         const oController = this.getController();
-        const oPage = oController.globalById(TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS);
+        const oPage = oController.globalById(LOPT_PAGE_GET_TASKS);
         const modelObj = this.getModel().getProperty("/obj");
         const task = modelObj.getTask();
         const executeTaskDialog = oController.globalById("getTasksExecuteTaskDialog");
@@ -439,7 +439,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_GET_TASKS, {
     hideLoading: function () {
         const oController = this.getController();
         const ongoingTaskPage = this.getController().globalById(
-            TASK_EXECUTOR_CLIENT_PAGE_GET_TASKS
+            LOPT_PAGE_GET_TASKS
         );
         if (oController.getApp().getBusy()) {
             oController.getApp().setBusy(false);

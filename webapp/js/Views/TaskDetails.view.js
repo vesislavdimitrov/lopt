@@ -1,11 +1,11 @@
-sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_TASK_DETAILS, {
+sap.ui.jsview(LOPT_VIEW_TASK_DETAILS, {
     getControllerName: function () {
-        return TASK_EXECUTOR_CLIENT_CONTROLLER_TASK_DETAILS;
+        return LOPT_CONTROLLER_TASK_DETAILS;
     },
 
     createContent: function (oController) {
-        const oPage = new sap.m.Page(TASK_EXECUTOR_CLIENT_PAGE_TASK_DETAILS, {
-            title: TASK_EXECUTOR_CLIENT_PAGE_TASK_DETAILS_TITLE,
+        const oPage = new sap.m.Page(LOPT_PAGE_TASK_DETAILS, {
+            title: LOPT_PAGE_TASK_DETAILS_TITLE,
             showNavButton: true
         });
         oPage
@@ -327,7 +327,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_TASK_DETAILS, {
 
     showInitTaskExecution: function () {
         const oController = this.getController();
-        const oPage = oController.globalById(TASK_EXECUTOR_CLIENT_PAGE_TASK_DETAILS);
+        const oPage = oController.globalById(LOPT_PAGE_TASK_DETAILS);
         const modelObj = this.getModel().getProperty("/obj");
         const taskUsername = modelObj.getUsername();
         const executeTaskDialog = oController.globalById("taskDetailsExecuteTaskDialog");
@@ -460,7 +460,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_TASK_DETAILS, {
     hideLoading: function () {
         const oController = this.getController();
         const ongoingTaskPage = this.getController().globalById(
-            TASK_EXECUTOR_CLIENT_PAGE_TASK_DETAILS
+            LOPT_PAGE_TASK_DETAILS
         );
         if (oController.getApp().getBusy()) {
             oController.getApp().setBusy(false);

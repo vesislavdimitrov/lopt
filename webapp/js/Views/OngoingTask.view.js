@@ -1,6 +1,6 @@
-sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_ONGOING_TASK, {
+sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
     getControllerName: function () {
-        return TASK_EXECUTOR_CLIENT_CONTROLLER_ONGOING_TASK;
+        return LOPT_CONTROLLER_ONGOING_TASK;
     },
 
     createContent: function (oController) {},
@@ -9,8 +9,8 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_ONGOING_TASK, {
         const oController = this.getController();
         this.destroyContent();
         this.removeContent();
-        const oPage = new sap.m.Page(TASK_EXECUTOR_CLIENT_PAGE_ONGOING_TASK, {
-            title: TASK_EXECUTOR_CLIENT_PAGE_ONGOING_TASK_TITLE
+        const oPage = new sap.m.Page(LOPT_PAGE_ONGOING_TASK, {
+            title: LOPT_PAGE_ONGOING_TASK_TITLE
         });
         oPage.setVisible(false);
         const oBlockLayout = new sap.ui.layout.BlockLayout({
@@ -105,7 +105,7 @@ sap.ui.jsview(TASK_EXECUTOR_CLIENT_VIEW_ONGOING_TASK, {
     hideLoading: function () {
         const oController = this.getController();
         const ongoingTaskPage = this.getController().globalById(
-            TASK_EXECUTOR_CLIENT_PAGE_ONGOING_TASK
+            LOPT_PAGE_ONGOING_TASK
         );
         if (oController.getApp().getBusy()) {
             oController.getApp().setBusy(false);
