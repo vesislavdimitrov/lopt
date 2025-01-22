@@ -158,6 +158,23 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                     }
                 }
             });
+        },
+
+        analyzeLog: function (logContent, callback) {
+            $.ajax({
+                url: CONFIG.API_BASE_URL + ANALYSIS_PATH,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ log: logContent }),
+                success: function(response) {
+                    const analysisOutput = response.output || "No analysis output available.";
+                    callback(null, analysisOutput);
+                },
+                error: function(xhr, status, error) {
+                    const errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).message : error;
+                    callback(errorMessage);
+                }
+            });
         }
     });
 });

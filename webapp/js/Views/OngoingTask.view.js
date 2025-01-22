@@ -186,6 +186,7 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
             taskControlsBox.destroy();
 
             this.createRegexFilterInput(ongoingTaskPageHeader);
+            this.createAnalysisButton(ongoingTaskPageHeader);
             this.createDownloadTaskLogButton(ongoingTaskPageHeader);
             this.createContinueToLaunchpadButton(ongoingTaskPageHeader);
         }
@@ -210,6 +211,78 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
             oController.onDownloadLogButtonClicked();
         });
         ongoingTaskPageHeader.addItem(downloadTaskLogButton);
+    },
+
+    createAnalysisButton: function (ongoingTaskPageHeader) {
+        const thisView = this;
+        const oController = this.getController();
+        const analysisButton = new sap.m.Button({
+            text: "AI Analysis",
+            icon: "sap-icon://ai",
+        })
+        .attachPress(() => {
+            const ongoingTaskLogElement = oController.globalById("ongoingTaskLog");
+            const logContent = ongoingTaskLogElement.getHtmlText();
+            let isCanceled = false;
+
+            this.createWaitingDialog().then((waitingDialog) => {
+                waitingDialog.open();
+                waitingDialog.getBeginButton().attachPress(() => {
+                    isCanceled = true;
+                    // TODO stop endpoint
+                    waitingDialog.close();
+                });
+                oController.analyzeLog(logContent, function (errorMessage, analysisOutput) {
+                    if (isCanceled) return; 
+                    waitingDialog.close();
+                    if (errorMessage) {
+                        thisView.showErrorDialog(errorMessage);
+                        return;
+                    }
+                    thisView.createOutputDialog(analysisOutput);
+                });
+            });
+        });
+        ongoingTaskPageHeader.addItem(analysisButton);
+    },
+
+    createWaitingDialog: function () {
+        return new Promise((resolve) => {
+            const waitingDialog = new sap.m.Dialog({
+                title: "Analyzing Log",
+                content: new sap.m.VBox({
+                    alignItems: "Center",
+                    justifyContent: "Center",
+                    items: [
+                        new sap.m.Text({ text: "Please wait..." })
+                    ]
+                }),
+                beginButton: new sap.m.Button({
+                    text: "Cancel",
+                    press: function () {
+                        waitingDialog.close();
+                    }
+                })
+            });
+            resolve(waitingDialog);
+        });
+    },
+
+    createOutputDialog: function (analysisOutput) {
+        return new Promise((resolve) => {
+            const outputDialog = new sap.m.Dialog({
+                title: "Analysis Result",
+                content: new sap.m.Text({ text: analysisOutput }),
+                beginButton: new sap.m.Button({
+                    text: "Close",
+                    press: function () {
+                        outputDialog.close();
+                    }
+                })
+            });
+            outputDialog.open();
+            resolve(outputDialog);
+        });
     },
 
     createContinueToLaunchpadButton: function (ongoingTaskPageHeader) {
@@ -270,5 +343,25 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
             taskLogTitle = "Filtered task log";
         }
         oTaskLogCell.setTitle(taskLogTitle);
-    }
+    },
+
+    showErrorDialog: function (errorMessage) {
+        const errorDialog = new sap.m.Dialog({
+            title: "Error",
+            type: "Message",
+            state: "Error",
+            content: new sap.m.Text({ text: errorMessage }),
+            beginButton: new sap.m.Button({
+                text: "OK",
+                press: function () {
+                    errorDialog.close();
+                }
+            }),
+            afterClose: function () {
+                errorDialog.destroy();
+            }
+        });
+
+        errorDialog.open();
+    },
 });

@@ -7,6 +7,7 @@ const RESUME_TASK_PATH = "/tasks/executions/resume";
 const STOP_TASK_PATH = "/tasks/executions/stop";
 const USERS_PATH = "/users";
 const UPLOAD_PATH = "/upload";
+const ANALYSIS_PATH = "/analysis";
 
 const ONGOING_TASK_POLL_INTERVAL = 2000;
 const TASK_STATES = {

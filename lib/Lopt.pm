@@ -6,6 +6,7 @@ use Lopt::Controllers::HomeController;
 use Lopt::Controllers::TaskController;
 use Lopt::Controllers::UserController;
 use Lopt::Controllers::UploadController;
+use Lopt::Controllers::AnalysisController;
 use Lopt::Execution::TaskExecution;
 use Cwd;
 
