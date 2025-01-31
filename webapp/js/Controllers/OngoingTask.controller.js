@@ -175,6 +175,14 @@ sap.ui.define(["./BaseController"], function (BaseController) {
                     callback(errorMessage);
                 }
             });
-        }
+        },
+
+        cancelAnalysis: function () {
+            $.ajax({
+                url: CONFIG.API_BASE_URL + ANALYSIS_PATH + "/stop",
+                method: "POST",
+                contentType: "application/json"
+            });
+        },
     });
 });

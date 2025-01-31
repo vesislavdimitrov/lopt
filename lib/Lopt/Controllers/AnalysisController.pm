@@ -52,9 +52,16 @@ prefix '/analysis' => sub {
     };
 
     post '/stop' => sub {
+        debug(get_debug_message(request));
 
-       #TODO
-       return 1;
+        if (!Lopt::Execution::Llama::terminate_llama_cli_instances()) {
+            status 500;
+            warning(get_warning_message(request));
+            return Lopt::Model::Exception->new(500, GENERIC_ERROR)->get_hash();
+        }
+
+        debug(get_success_message(request));
+        status 200;
     };
 };
 

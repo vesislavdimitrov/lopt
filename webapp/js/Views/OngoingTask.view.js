@@ -229,7 +229,7 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
                 waitingDialog.open();
                 waitingDialog.getBeginButton().attachPress(() => {
                     isCanceled = true;
-                    // TODO stop endpoint
+                    oController.cancelAnalysis();
                     waitingDialog.close();
                 });
                 oController.analyzeLog(logContent, function (errorMessage, analysisOutput) {
@@ -272,14 +272,24 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
         return new Promise((resolve) => {
             const outputDialog = new sap.m.Dialog({
                 title: "Analysis Result",
-                content: new sap.m.Text({ text: analysisOutput }),
+                contentWidth: "400px",
+                content: new sap.m.VBox({
+                    items: [
+                        new sap.m.Text({
+                            text: analysisOutput,
+                            wrapping: true
+                        }).addStyleClass("sapUiTinyMargin")
+                    ]
+                }),
                 beginButton: new sap.m.Button({
                     text: "Close",
+                    type: sap.m.ButtonType.Emphasized,
                     press: function () {
                         outputDialog.close();
                     }
                 })
             });
+
             outputDialog.open();
             resolve(outputDialog);
         });

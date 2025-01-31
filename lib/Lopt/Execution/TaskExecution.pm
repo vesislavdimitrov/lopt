@@ -122,7 +122,9 @@ sub execute_task {
     content to_json({ running_task_pid => $running_pid, running_task_status => $PROCESS_RUNNING_STATE });
 
     my $pid_info = "Process PID: $running_pid\n";
+
     print $log_fh $pid_info;
+    print $log_fh "\n=========OUTPUT=========\n";
 
     my $exit_code = -1; # unknown status code
     while(waitpid($running_pid, WNOHANG) > -1) {
