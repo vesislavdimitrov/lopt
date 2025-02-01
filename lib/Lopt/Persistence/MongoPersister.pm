@@ -11,6 +11,9 @@ use Lopt::Constants qw(
     $MONGO_DB_NAME
     $MONGO_TASKS_COLLECTION_NAME
     $MONGO_LAST_TASK_COLLECTION_NAME
+    $MONGO_RUNNING_TASK_COLLECTION_NAME
+    $TASK_DATA_DELIMITER
+    $NO_RUNNING_PROCESS
 );
 
 use parent qw(Lopt::Persistence::Persister);
@@ -91,11 +94,36 @@ sub delete_last_executed_task {
     return 1;
 }
 
+sub get_process_status {
+    my ($self) = @_;
+    my $task = $self->_get_running_task_collection()->find_one();
+    return $NO_RUNNING_PROCESS unless $task;
+    return join($TASK_DATA_DELIMITER, ($task->{pid}, $task->{status}, $task->{logfile}));
+}
+
+sub save_process_status {
+    my ($self, $pid) = @_;
+    my ($task_pid, $task_status, $task_logfile) = split(/$TASK_DATA_DELIMITER/, $pid, 3);
+    $self->_get_running_task_collection()->replace_one(
+        {},
+        { pid => $task_pid, status => $task_status, logfile => $task_logfile },
+        { upsert => 1 }
+    );
+    return 1;
+}
+
 sub _get_tasks_collection {
     my ($self) = @_;
     $mongo_client ||= _initialize_mongo_client();
     my $db = $mongo_client->get_database($MONGO_DB_NAME);
     return $db->get_collection($MONGO_TASKS_COLLECTION_NAME);
+}
+
+sub _get_running_task_collection {
+    my ($self) = @_;
+    $mongo_client ||= _initialize_mongo_client();
+    my $db = $mongo_client->get_database($MONGO_DB_NAME);
+    return $db->get_collection($MONGO_RUNNING_TASK_COLLECTION_NAME);
 }
 
 sub _get_last_task_collection {

@@ -10,7 +10,21 @@ use constant {
     LLAMA_CLI_LOCATION => $ENV{LOPT_LLAMA_CLI_LOCATION},
     GGUF_MODEL_LOCATION => $ENV{LOPT_GGUF_MODEL_LOCATION},
     LLAMA_CLI_THREADS => $ENV{LOPT_LLAMA_CLI_THREADS},
-    LLAMA_CLI_CALL_BASE => '%s -m %s --no-display-prompt -c %s --temp %s --repeat_penalty %s -n %s --threads %s --mlock -p "%s" --no-warmup 2>/dev/null'
+    LLAMA_CLI_CALL_BASE => '%s -m %s --no-display-prompt -c %s --temp %s --repeat_penalty %s -n %s --threads %s --mlock -p "%s" --no-warmup 2>/dev/null',
+    SYSTEM_PROMT =>
+        "You are an AI assistant that ONLY helps analyze logs from tasks" .
+        "Below is an instruction that describes a task. Write " .
+        "a response that appropriately completes the request.\n" .
+
+        "### Instruction: This is the output of the command. Check it out, note if there " .
+        "are any issues. It is a command run in the shell. " .
+        "Try to only point out potentially important information and suggestions in case there is an error. " .
+
+        "The task output is below '=========OUTPUT========='\n" .
+        "DO NOT ask for additional context: %s " .
+        "DO NOT add any unrelated information " .
+
+        "\n### Response:"
 };
 
 sub new {
@@ -79,23 +93,8 @@ sub _build_command {
 }
 
 sub _build_prompt {
-    my ($self, $prompt) = @_;
-    my $system_prompt =
-        "You are an AI assistant that ONLY helps analyze logs from tasks" .
-        "Below is an instruction that describes a task. Write " .
-        "a response that appropriately completes the request.\n" .
-
-        "### Instruction: This is the output of the command. Check it out, note if there " .
-        "are any issues. It is a command run in the shell. " .
-        "Try to be short in your response and only point out potentially important information. " .
-
-        "The outpput is under the =====OUTPUT==== line " .
-        "DO NOT say that the output is displayed in bold " .
-        "DO NOT ask for additional context: %s " .
-        "DO NOT add any unrelated information " .
-
-        "\n### Response:" ;
-    return sprintf($system_prompt, $prompt);
+    my ($self, $prompt) = @_;        
+    return sprintf(SYSTEM_PROMT, $prompt);
 }
 
 sub _get_trimmed_output {
@@ -104,8 +103,9 @@ sub _get_trimmed_output {
     return $output;
 }
 
+# Scary!
 sub terminate_llama_cli_instances {
-    my @pids = `pgrep -f llama`;
+    my @pids = qx/pgrep -f llama/;
     chomp(@pids);
     return 1 unless @pids;
 

@@ -118,7 +118,7 @@ sub execute_task {
     $pipe->reader($task_string);
 
     my $running_pid = ${*$pipe}{'io_pipe_pid'};
-    $self->persister()->save_process_status(join($PID_FILE_DELIMITER, ($running_pid, $PROCESS_RUNNING_STATE, $self->log_filename())));
+    $self->persister()->save_process_status(join($TASK_DATA_DELIMITER, ($running_pid, $PROCESS_RUNNING_STATE, $self->log_filename())));
     content to_json({ running_task_pid => $running_pid, running_task_status => $PROCESS_RUNNING_STATE });
 
     my $pid_info = "Process PID: $running_pid\n";
@@ -145,25 +145,25 @@ sub execute_task {
 sub pause_task {
     my ($self) = @_;
     kill 'STOP', $self->pid();
-    my @pidstat = split(/$PID_FILE_DELIMITER/, $self->persister()->get_process_status());
+    my @pidstat = split(/$TASK_DATA_DELIMITER/, $self->persister()->get_process_status());
     $pidstat[1] = $PROCESS_PAUSED_STATE;
-    $self->persister()->save_process_status(join($PID_FILE_DELIMITER, @pidstat));
+    $self->persister()->save_process_status(join($TASK_DATA_DELIMITER, @pidstat));
 }
 
 sub resume_task {
     my ($self) = @_;
     kill 'CONT', $self->pid();
-    my @pidstat = split(/$PID_FILE_DELIMITER/, $self->persister()->get_process_status());
+    my @pidstat = split(/$TASK_DATA_DELIMITER/, $self->persister()->get_process_status());
     $pidstat[1] = $PROCESS_RUNNING_STATE;
-    $self->persister()->save_process_status(join($PID_FILE_DELIMITER, @pidstat));
+    $self->persister()->save_process_status(join($TASK_DATA_DELIMITER, @pidstat));
 }
 
 sub stop_task {
     my ($self) = @_;
     kill 'KILL', $self->pid();
-    my @pidstat = split(/$PID_FILE_DELIMITER/, $self->persister()->get_process_status());
+    my @pidstat = split(/$TASK_DATA_DELIMITER/, $self->persister()->get_process_status());
     $pidstat[1] = $PROCESS_STOPPED_STATE;
-    $self->persister()->save_process_status(join($PID_FILE_DELIMITER, @pidstat));
+    $self->persister()->save_process_status(join($TASK_DATA_DELIMITER, @pidstat));
 }
 
 sub create_logfile {

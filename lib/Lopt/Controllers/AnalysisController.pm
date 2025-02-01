@@ -17,7 +17,7 @@ use Lopt::Controllers::Utils qw(
 
 use constant {
     NO_LOG_ERROR => 'No log provided for analysis.',
-    MISSING_ENV_ERROR => 'Missing AI Analysis environment.',
+    MISSING_ENV_ERROR => 'Missing AI Assistant environment.',
     GENERIC_ERROR => 'Soemthing went wrong. Could not analyze log.'
 };
 

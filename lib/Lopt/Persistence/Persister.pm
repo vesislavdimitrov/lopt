@@ -3,7 +3,7 @@ package Lopt::Persistence::Persister;
 use Dancer2 appname => 'Lopt';
 use POSIX;
 use File::JSON::Slurper qw(read_json write_json);
-use File::Slurper qw(read_text write_text);
+use File::Slurper qw(read_text);
 use Lopt::Constants;
 use File::HomeDir;
 
@@ -47,19 +47,6 @@ sub delete_task {
     ...
 }
 #===END Abstract
-
-sub get_process_status {
-    my ($self) = @_;
-    my $pid = eval { read_text($PID_FILE) };
-    return $pid if defined $pid;
-    return $NO_RUNNING_PROCESS;
-}
-
-sub save_process_status {
-    my ($self, $pid) = @_;
-    write_text($PID_FILE, $pid);
-    return 1;
-}
 
 sub save_execution {
     my ($self, $log_dir, $execution) = @_;

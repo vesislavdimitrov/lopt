@@ -63,7 +63,7 @@ prefix '/tasks' => sub {
             debug(get_debug_message(request));
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
-            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
             return { running_task_pid => $pidstat[0], running_task_status => $pidstat[1] };
         };
 
@@ -71,7 +71,7 @@ prefix '/tasks' => sub {
             debug(get_debug_message(request));
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
-            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
 
             if ($pidstat[0] <= $NO_PROCESS_PID || !defined $pidstat[2]) {
                 warning(get_warning_message(request));
@@ -130,7 +130,7 @@ prefix '/tasks' => sub {
             debug(get_debug_message(request));
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
-            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
             if($pidstat[0] > $NO_PROCESS_PID && $pidstat[1] == $PROCESS_RUNNING_STATE) {
                 $task_execution->set_pid($pidstat[0]);
                 $task_execution->pause_task();
@@ -149,7 +149,7 @@ prefix '/tasks' => sub {
             debug(get_debug_message(request));
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
-            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
             if($pidstat[0] > $NO_PROCESS_PID && $pidstat[1] == $PROCESS_PAUSED_STATE) {
                 $task_execution->set_pid($pidstat[0]);
                 $task_execution->resume_task();
@@ -166,7 +166,7 @@ prefix '/tasks' => sub {
             debug(get_debug_message(request));
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
-            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
             if($pidstat[0] > $NO_PROCESS_PID) {
                 $task_execution->set_pid($pidstat[0]);
                 $task_execution->stop_task();
@@ -184,7 +184,7 @@ prefix '/tasks' => sub {
             debug(get_debug_message(request));
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
-            my @pidstat = split(/$PID_FILE_DELIMITER/, $task_execution->persister()->get_process_status());
+            my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
             if($pidstat[0] > $NO_PROCESS_PID) {
                 warning(get_warning_message(request));
                 status 503;

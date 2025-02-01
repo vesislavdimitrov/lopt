@@ -217,7 +217,7 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
         const thisView = this;
         const oController = this.getController();
         const analysisButton = new sap.m.Button({
-            text: "AI Analysis",
+            text: "AI Assistant",
             icon: "sap-icon://ai",
         })
         .attachPress(() => {
