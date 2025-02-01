@@ -74,7 +74,6 @@ sub write_user_home {
     return 1;
 }
 
-
 sub get_users {
     my ($self) = @_;
     my $users = [];

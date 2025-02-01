@@ -33,8 +33,8 @@ sub new {
         model_path => GGUF_MODEL_LOCATION,
         context_size => $context_size || 514,
         temperature => $temperature || 0,
-        repeat_penalty => $repeat_penalty || 1.2,
-        tokens => $tokens || 52,
+        repeat_penalty => $repeat_penalty || 1.3,
+        tokens => $tokens || 64,
         threads => LLAMA_CLI_THREADS
     };
     bless $self, $class;

@@ -14,6 +14,7 @@ use Lopt::Constants qw(
     $MONGO_RUNNING_TASK_COLLECTION_NAME
     $TASK_DATA_DELIMITER
     $NO_RUNNING_PROCESS
+    $PROCESS_STOPPED_STATE
 );
 
 use parent qw(Lopt::Persistence::Persister);
