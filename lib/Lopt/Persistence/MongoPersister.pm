@@ -98,13 +98,19 @@ sub delete_last_executed_task {
 sub get_process_status {
     my ($self) = @_;
     my $task = $self->_get_running_task_collection()->find_one();
-    return $NO_RUNNING_PROCESS unless $task;
+    return $NO_RUNNING_PROCESS if !$task;
     return join($TASK_DATA_DELIMITER, ($task->{pid}, $task->{status}, $task->{logfile}));
 }
 
 sub save_process_status {
     my ($self, $pid) = @_;
     my ($task_pid, $task_status, $task_logfile) = split(/$TASK_DATA_DELIMITER/, $pid, 3);
+
+    if ($task_status == $PROCESS_STOPPED_STATE) {
+        $self->_get_running_task_collection()->delete_one({});
+        return 1;
+    }
+
     $self->_get_running_task_collection()->replace_one(
         {},
         { pid => $task_pid, status => $task_status, logfile => $task_logfile },

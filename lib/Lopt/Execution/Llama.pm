@@ -34,7 +34,7 @@ sub new {
         context_size => $context_size || 514,
         temperature => $temperature || 0,
         repeat_penalty => $repeat_penalty || 1.3,
-        tokens => $tokens || 64,
+        tokens => $tokens || 96,
         threads => LLAMA_CLI_THREADS
     };
     bless $self, $class;
