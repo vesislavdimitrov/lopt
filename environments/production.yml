@@ -3,7 +3,7 @@
 # only log warning and error messsages
 log: "warning"
 
-# log message to a file in logs/
+# log message to a file in server_logs/
 logger: "file"
 
 # hide errors

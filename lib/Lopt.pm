@@ -17,9 +17,8 @@ our $VERSION = '1.0';
 $ENV{'WORKSPACE'} = File::Spec->catfile(getcwd(), $WORKSPACE_DIR);
 
 # ensure clean boot
-Lopt::Execution::TaskExecution
-    ->new()
-    ->persister()
-    ->save_process_status($NO_RUNNING_PROCESS); 
+my $executionPersister = Lopt::Execution::TaskExecution->new()->persister();
+$executionPersister->save_process_status($NO_RUNNING_PROCESS);
+$executionPersister->delete_last_executed_task();
 
 1;

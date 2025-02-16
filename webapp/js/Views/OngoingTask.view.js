@@ -45,7 +45,7 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
         blockLayoutRows[0].addContent(blockLayoutRow0Cell0);
 
         const blockLayoutRow1Cell0 = new sap.ui.layout.BlockLayoutCell("taskLogCell", {
-            title: "Task log"
+            title: "Task Output"
         });
         this.createOngoingTaskLogContainer(blockLayoutRow1Cell0);
         blockLayoutRows[1].addContent(blockLayoutRow1Cell0);
@@ -206,7 +206,10 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
 
     createDownloadTaskLogButton: function (ongoingTaskPageHeader) {
         const oController = this.getController();
-        const downloadTaskLogButton = new sap.m.Button({ text: "Download task log" });
+        const downloadTaskLogButton = new sap.m.Button({
+            text: "Download task log",
+            icon: "sap-icon://download"
+        });
         downloadTaskLogButton.attachPress(() => {
             oController.onDownloadLogButtonClicked();
         });
@@ -233,7 +236,7 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
                     waitingDialog.close();
                 });
                 oController.analyzeLog(logContent, function (errorMessage, analysisOutput) {
-                    if (isCanceled) return; 
+                    if (isCanceled) return;
                     waitingDialog.close();
                     if (errorMessage) {
                         thisView.showErrorDialog(errorMessage);
@@ -299,7 +302,8 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
         const oController = this.getController();
         const continueToLaunchpadButton = new sap.m.Button({
             text: "Finish task log review",
-            type: sap.m.ButtonType.Emphasized
+            type: sap.m.ButtonType.Emphasized,
+            icon: "sap-icon://complete",
         });
         continueToLaunchpadButton.attachPress(() => {
             oController.finishTaskLogReview();
@@ -348,7 +352,7 @@ sap.ui.jsview(LOPT_VIEW_ONGOING_TASK, {
     changeTaskLogTitle: function (filtered = false) {
         const oController = this.getController();
         const oTaskLogCell = oController.globalById("taskLogCell");
-        let taskLogTitle = "Task log";
+        let taskLogTitle = "Task Output";
         if (filtered) {
             taskLogTitle = "Filtered task log";
         }

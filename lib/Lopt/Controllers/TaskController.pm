@@ -6,7 +6,7 @@ use warnings;
 use Dancer2 appname => 'Lopt';
 use Lopt::Constants;
 use Lopt::Model::Task;
-use Lopt::Model::TaskExecution;
+use Lopt::Model::ExecutionRequest;
 use Lopt::Model::Exception;
 use Lopt::Service::TaskRepository;
 use Lopt::Validation;
@@ -213,43 +213,44 @@ prefix '/tasks' => sub {
                     "Cannot execute task: invalid task ID."
                 )->get_hash();
             }
-              
+
             my $post_data = from_json(request->body);
-            my $task_model = Lopt::Model::TaskExecution->new($post_data);
-            if($task_model->check_validity()) {
-                my $repository = Lopt::Service::TaskRepository->new($id);
-                my $task = $repository->fetch();
-                if(defined $task) {
-                    my $valid_credentials = verify_credentials($task->{'username'}, $task_model->data()->{'password'});
-                    if(!$valid_credentials) {
-                        warning(get_warning_message(request));
-                        status 400;
-                        return Lopt::Model::Exception->new(
-                            400,
-                            "Cannot execute task: invalid username used when creating the task or an invalid password supplied when executing the task."
-                        )->get_hash();
-                    }
-                    debug(get_success_message(request));
-                    $task_execution->set_id($id);
-                    $task_execution->set_task($task);
-                    delayed {
-                        flush;
-                        $task_execution->execute();
-                        done;
-                    };
-                } else {
-                    warning(get_warning_message(request));
-                    status 404;
-                    return Lopt::Model::Exception->new(
-                        404,
-                        "Cannot execute task: task not found."
-                    )->get_hash();
-                }
-            } else {
+            my $request_model = Lopt::Model::ExecutionRequest->new($post_data);
+            if(!$request_model->check_validity()) {
                 warning(get_warning_message(request));
                 status 400;
-                return Lopt::Model::Exception->new(400, $task_model->error_message())->get_hash();
+                return Lopt::Model::Exception->new(400, $request_model->error_message())->get_hash();
             }
+
+            my $repository = Lopt::Service::TaskRepository->new($id);
+            my $task = $repository->fetch();
+            if(!defined $task) {
+                warning(get_warning_message(request));
+                status 404;
+                return Lopt::Model::Exception->new(
+                    404,
+                    "Cannot execute task: task not found."
+                )->get_hash();
+            }
+
+            my $valid_credentials = verify_credentials($task->{'username'}, $request_model->data()->{'password'});
+            if(!$valid_credentials) {
+                warning(get_warning_message(request));
+                status 400;
+                return Lopt::Model::Exception->new(
+                    400,
+                    "Cannot execute task: invalid username used when creating the task or an invalid password supplied when executing the task."
+                )->get_hash();
+            }
+
+            debug(get_success_message(request));
+            $task_execution->set_id($id);
+            $task_execution->set_task($task);
+            delayed {
+                flush;
+                $task_execution->execute();
+                done;
+            };
         };
     };
 

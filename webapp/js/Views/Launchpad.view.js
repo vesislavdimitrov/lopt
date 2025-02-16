@@ -16,61 +16,7 @@ sap.ui.jsview(LOPT_VIEW_LAUNCHPAD, {
         this.createActionsTilesTitle(verticalLayout);
         this.createTiles(verticalLayout);
         oPage.addContent(verticalLayout);
-
-        // TODO uncomment once this is ready to ship
-        //this.createPasswordDialog(oPage, oController);
         return oPage;
-    },
-
-    createPasswordDialog: function (oPage, oController) {
-        const passwordDialog = this.createDialog(oPage, oController);
-        const errorMessage = this.createPasswordErrorMessage();
-        passwordDialog.addContent(errorMessage);
-        passwordDialog.open();
-    },
-
-    createDialog: function (oPage, oController) {
-        return new sap.m.Dialog("passwordDialog", {
-            title: "Enter the application user password",
-            type: sap.m.DialogType.Message,
-            content: this.createPasswordInput(),
-            beginButton: this.createLoginButton(oPage, oController),
-            afterClose: function () {
-                this.destroy();
-            }
-        });
-    },
-
-    createPasswordInput: function () {
-        return new sap.m.Input("passwordInput", {
-            type: sap.m.InputType.Password,
-            placeholder: "Password"
-        });
-    },
-
-    createLoginButton: function (oPage, oController) {
-        return new sap.m.Button({
-            text: "Log in",
-            type: sap.m.ButtonType.Emphasized,
-            press: function () {
-                const password = sap.ui.getCore().byId("passwordInput").getValue();
-                if (password !== "Abcd1234") { // TODO server side
-                    sap.ui.getCore().byId("passwordErrorMessage").setVisible(true);
-                    return;
-                }
-                oPage.setVisible(true);
-                sap.ui.getCore().byId("passwordDialog").close();
-                oController.pageLoaded();
-            }
-        });
-    },
-
-    createPasswordErrorMessage: function () {
-        return new sap.m.MessageStrip("passwordErrorMessage", {
-            text: "Incorrect password. Please try again.",
-            type: sap.ui.core.MessageType.Error,
-            visible: false
-        }).addStyleClass("sapUiResponsiveMargin");
     },
 
     createErrorMessageStrip: function (oPage) {

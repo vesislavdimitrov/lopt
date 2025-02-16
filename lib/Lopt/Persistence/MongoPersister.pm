@@ -97,9 +97,9 @@ sub delete_last_executed_task {
 
 sub get_process_status {
     my ($self) = @_;
-    my $task = $self->_get_running_task_collection()->find_one();
-    return $NO_RUNNING_PROCESS if !$task;
-    return join($TASK_DATA_DELIMITER, ($task->{pid}, $task->{status}, $task->{logfile}));
+    my $execution = $self->_get_running_task_collection()->find_one();
+    return $NO_RUNNING_PROCESS if !$execution;
+    return join($TASK_DATA_DELIMITER, ($execution->{pid}, $execution->{status}, $execution->{logfile}));
 }
 
 sub save_process_status {

@@ -122,9 +122,9 @@ sub execute_task {
     content to_json({ running_task_pid => $running_pid, running_task_status => $PROCESS_RUNNING_STATE });
 
     my $pid_info = "Process PID: $running_pid\n";
-
+    my $otput_delimiter = "\n=========OUTPUT=========\n";
     print $log_fh $pid_info;
-    print $log_fh "\n=========OUTPUT=========\n";
+    print $log_fh $otput_delimiter;
 
     my $exit_code = -1; # unknown status code
     while(waitpid($running_pid, WNOHANG) > -1) {
@@ -135,8 +135,8 @@ sub execute_task {
         $exit_code = $? >> 8;
     }
 
-    my $task_exec_report = "\nTask execution exited with code: $exit_code\n";
-    print $log_fh $task_exec_report;
+    print $log_fh $otput_delimiter;
+    print $log_fh "\nTask execution exited with code: $exit_code\n";
 
     $self->persister()->save_process_status($NO_RUNNING_PROCESS);
     return $exit_code;
