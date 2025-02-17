@@ -4,6 +4,8 @@ package Lopt::Controllers::Utils;
 use strict;
 use warnings;
 
+use Lopt::Validation qw(authenticate_user has_basic_auth);
+
 use parent qw(Exporter);
 
 our @EXPORT_OK=qw(
@@ -11,7 +13,24 @@ our @EXPORT_OK=qw(
     get_success_message
     get_warning_message
     get_banned_method_message
+    get_unsecure_request_message
+    get_auth_error
+    authorize
 );
+
+sub authorize {
+    my ($request) = @_;
+    my $auth_header = $request->header('Authorization');
+    
+    return 0 if !has_basic_auth($auth_header) || !authenticate_user((split ' ', $auth_header)[1]);
+    return 1;
+}
+
+sub get_auth_error {
+    my ($request) = @_;
+    return Lopt::Model::Exception->new(401, get_unsecure_request_message($request))
+        ->get_hash();
+}
 
 sub get_debug_message {
     my ($request) = @_;
@@ -39,6 +58,13 @@ sub get_banned_method_message {
     my $method = $request->method();
     my $request_path = $request->path();
     return "Received a disallowed method $method at $request_path";
+}
+
+sub get_unsecure_request_message {
+    my ($request) = @_;
+    my $method = $request->method();
+    my $request_path = $request->path();
+    return "Received an unsecure $method request at $request_path";
 }
 
 1;

@@ -8,6 +8,7 @@ source "${TASKS_EXEC_SCRIPT_DIR}/common.sh"
 # Set up data
 echo -e "\n${NC}Adding a new user...${NC}"
 curl -s -X POST "${LOCAL_URL}/users" \
+    -u "root:${TEST_PASSWD}" \
     -H "Content-Type: application/json" \
     -d '{
             "username": "testmax",
@@ -17,6 +18,7 @@ curl -s -X POST "${LOCAL_URL}/users" \
 
 echo -e "\n${NC}Adding a new task...${NC}"
 new_task=$(curl -s -X POST "${LOCAL_URL}/tasks" \
+    -u "root:${TEST_PASSWD}" \
     -H "Content-Type: application/json" \
     -d '{
             "description": "printenv",
@@ -41,6 +43,7 @@ echo -e "\n${GREEN}TASK CREATED SUCCESSFULLY WITH ID: ${task_id}${NC}"
 # Execute task
 echo -e "\n${NC}Starting task execution...${NC}"
 execution_response=$(curl -s -X POST "${LOCAL_URL}/tasks/executions/${task_id}" \
+    -u "root:${TEST_PASSWD}" \
     -H "Content-Type: application/json" \
     -d '{
             "password": "Abcd1234"
@@ -57,7 +60,7 @@ echo -e "\n${GREEN}TASK RUNNING WITH PID: ${execution_pid}${NC}"
 #===========================================================================================
 # Validate task lifecycle
 echo -e "\n${NC}Checking task execution...${NC}"
-check_response=$(curl -s "${LOCAL_URL}/tasks/executions/last")
+check_response=$(curl -u "root:${TEST_PASSWD}" -s "${LOCAL_URL}/tasks/executions/last")
 
 return_status=$(echo "${check_response}" | grep -oP '"exit_code":\s*\K\d+')
 if [ "${return_status}" != "${EXIT_CODE_SUCCESS}" ]; then
@@ -70,14 +73,14 @@ if ! echo "${check_response}" | grep -q 'KEY=1234'; then
     exit "${EXIT_CODE_FAILURE}"
 fi
 
-last_task=$(curl -s -X GET "${LOCAL_URL}/tasks/executions/last")
+last_task=$(curl -u "root:${TEST_PASSWD}" -s -X GET "${LOCAL_URL}/tasks/executions/last")
 if ! echo "${last_task}" | grep -q 'KEY=1234'; then
     echo -e "\n${RED}TASK OUTPUT INVALID: Missing 'KEY=1234'${NC}"
     exit "${EXIT_CODE_FAILURE}"
 fi
 echo -e "\n${GREEN}TASK SUCCEEDED AND OUTPUT IS VALID${NC}"
 
-ongoing_status=$(curl -s -o /dev/null -w "%{http_code}" -X GET "${LOCAL_URL}/tasks/executions/ongoing")
+ongoing_status=$(curl -u "root:${TEST_PASSWD}" -s -o /dev/null -w "%{http_code}" -X GET "${LOCAL_URL}/tasks/executions/ongoing")
 if [ "${ongoing_status}" -ne "404" ]; then
     echo -e "\n${RED}ONGOING TASK CHECK FAILED'${NC}"
     exit "${EXIT_CODE_FAILURE}"
@@ -85,14 +88,14 @@ fi
 echo -e "\n${GREEN}NO TASK RUNNING${NC}"
 
 echo -e "\n${NC}Finishing log review...${NC}"
-curl -s -X DELETE "${LOCAL_URL}/tasks/executions/last"
+curl -u "root:${TEST_PASSWD}" -s -X DELETE "${LOCAL_URL}/tasks/executions/last"
 
 echo -e "\n${NC}Deleting user 'testmax' with 'delete_home': 1...${NC}"
-curl -s -X DELETE "${LOCAL_URL}/users/testmax" \
+curl -u "root:${TEST_PASSWD}" -s -X DELETE "${LOCAL_URL}/users/testmax" \
     -H "Content-Type: application/json" \
     -d '{"delete_home": 1}'
 
 echo -e "\n${NC}Deleting task with ID: ${task_id}...${NC}"
-curl -s -X DELETE "${LOCAL_URL}/tasks/${task_id}"
+curl -u "root:${TEST_PASSWD}" -s -X DELETE "${LOCAL_URL}/tasks/${task_id}"
 
 echo -e "\n${GREEN}TASKS EXECUTION TESTS SUCCESSFUL${NC}"

@@ -16,11 +16,14 @@ use Lopt::Controllers::Utils qw(
     get_success_message
     get_warning_message
     get_banned_method_message
+    get_auth_error
+    authorize
 );
 
 prefix '/tasks' => sub {
     post '' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         my $task_model = Lopt::Model::Task->new(from_json(request->body()));
         if(!$task_model->check_validity()) {
@@ -49,6 +52,7 @@ prefix '/tasks' => sub {
 
     get '' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         my $tasks = Lopt::Service::TaskRepository->new()->fetch();
         return $tasks if @{$tasks} > 0;
@@ -61,6 +65,7 @@ prefix '/tasks' => sub {
     prefix '/executions' => sub {
         get '' => sub {
             debug(get_debug_message(request));
+            return get_auth_error(request) if !authorize(request);
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
             my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
@@ -69,6 +74,7 @@ prefix '/tasks' => sub {
 
         get '/ongoing' => sub {
             debug(get_debug_message(request));
+            return get_auth_error(request) if !authorize(request);
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
             my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
@@ -90,6 +96,7 @@ prefix '/tasks' => sub {
 
         get '/last' => sub {
             debug(get_debug_message(request));
+            return get_auth_error(request) if !authorize(request);
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
             my $last_task_exists = $task_execution->persister()->get_last_executed_task();
@@ -110,6 +117,7 @@ prefix '/tasks' => sub {
 
         del '/last' => sub {
             debug(get_debug_message(request));
+            return get_auth_error(request) if !authorize(request);
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
             my $last_task_exists = $task_execution->persister()->get_last_executed_task();
@@ -128,6 +136,7 @@ prefix '/tasks' => sub {
 
         post '/pause' => sub {
             debug(get_debug_message(request));
+            return get_auth_error(request) if !authorize(request);
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
             my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
@@ -147,6 +156,7 @@ prefix '/tasks' => sub {
 
         post '/resume' => sub {
             debug(get_debug_message(request));
+            return get_auth_error(request) if !authorize(request);
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
             my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
@@ -164,6 +174,7 @@ prefix '/tasks' => sub {
 
         post '/stop' => sub {
             debug(get_debug_message(request));
+            return get_auth_error(request) if !authorize(request);
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
             my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
@@ -182,6 +193,7 @@ prefix '/tasks' => sub {
 
         post '/:id' => sub {
             debug(get_debug_message(request));
+            return get_auth_error(request) if !authorize(request);
 
             my $task_execution = Lopt::Execution::TaskExecution->new();
             my @pidstat = split(/$TASK_DATA_DELIMITER/, $task_execution->persister()->get_process_status());
@@ -256,6 +268,7 @@ prefix '/tasks' => sub {
 
     get '/:id' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         my $id = params->{id};
         if(!validate_id($id)) {
@@ -282,6 +295,7 @@ prefix '/tasks' => sub {
 
     del '/:id' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         my $id = params->{id};
         if(!validate_id($id)) {
@@ -308,6 +322,7 @@ prefix '/tasks' => sub {
 
     put '/:id' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         my $id = params->{id};
         if(!validate_id($id)) {

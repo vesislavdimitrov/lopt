@@ -5,14 +5,38 @@ use warnings;
 
 use IO::File;
 use Exporter qw(import);
+use MIME::Base64;
+use Authen::Simple::Passwd;
 use Lopt::Constants;
 
-our @EXPORT = qw(validate_id verify_credentials verify_username is_shell_script);
+our @EXPORT = qw(
+    validate_id
+    authenticate_user
+    has_basic_auth
+    verify_credentials
+    verify_username
+    is_shell_script
+);
 
 sub validate_id {
     my ($id) = @_;
     my $uuid_regex = qr/$UUID_PATTERN/;
     return $id =~ $uuid_regex;
+}
+
+sub authenticate_user {
+    my ($base64_string) = @_;
+
+    my $decoded = decode_base64($base64_string);
+    my ($username, $password) = split(':', $decoded, 2);
+
+    my $auth = Authen::Simple::Passwd->new( path => $SHADOW_PATH );
+    return $auth->authenticate($username, $password);
+}
+
+sub has_basic_auth {
+    my ($auth_header) = @_;
+    return $auth_header && $auth_header =~ /^Basic*/;
 }
 
 sub verify_credentials {

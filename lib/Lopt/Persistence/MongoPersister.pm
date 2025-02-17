@@ -74,11 +74,14 @@ sub delete_task {
 
 sub save_last_executed_task {
     my ($self, $last_task_data) = @_;
+
+    $last_task_data->{_id} = "last_execution";
     $self->_get_last_task_collection()->replace_one(
         {},
         $last_task_data,
         { upsert => 1 }
     );
+
     return 1;
 }
 
@@ -113,7 +116,12 @@ sub save_process_status {
 
     $self->_get_running_task_collection()->replace_one(
         {},
-        { pid => $task_pid, status => $task_status, logfile => $task_logfile },
+        {
+            _id => "runing_execution",
+            pid => $task_pid,
+            status => $task_status,
+            logfile => $task_logfile
+        },
         { upsert => 1 }
     );
     return 1;

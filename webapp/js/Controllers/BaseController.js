@@ -88,6 +88,18 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
             if (oSource.getValueState() == sap.ui.core.ValueState.Error) {
                 oSource.setValueState(sap.ui.core.ValueState.None);
             }
-        }
+        },
+
+        logIn: function(password) {
+            if (password === "Abcd1234") { // TODO Server side
+                jQuery.sap.storage.put('token', btoa("root" + ":" + password));
+                return true;
+            }
+            return false;
+        },
+
+        isLoggedIn: function () {
+            return jQuery.sap.storage.get('token') !== null
+        },
     });
 });

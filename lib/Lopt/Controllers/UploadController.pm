@@ -15,6 +15,8 @@ use Lopt::Controllers::Utils qw(
     get_warning_message
     get_banned_method_message
     get_success_message
+    get_auth_error
+    authorize
 );
 
 use constant {
@@ -32,6 +34,7 @@ prefix '/upload' => sub {
 
     post '' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         if (!-d $UPLOAD_DIR) {
             mkdir $UPLOAD_DIR or do {

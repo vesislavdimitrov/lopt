@@ -11,6 +11,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token')},
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {

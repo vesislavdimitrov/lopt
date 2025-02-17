@@ -10,6 +10,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + TASKS_PATH + "/" + taskId,
                 success: function (result) {
                     result.isUpdateTaskPage = true;
@@ -63,6 +64,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const taskToSend = modelObj.getTask();
             $.ajax({
                 type: "PUT",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + TASKS_PATH + "/" + taskId,
                 data: JSON.stringify(taskToSend),
                 success: function (result) {
@@ -94,6 +96,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const taskToSend = modelObj.getTask();
             $.ajax({
                 type: "POST",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + TASKS_PATH,
                 data: JSON.stringify(taskToSend),
                 success: function (result) {
@@ -160,6 +163,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {

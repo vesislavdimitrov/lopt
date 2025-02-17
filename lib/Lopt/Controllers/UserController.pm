@@ -11,15 +11,19 @@ use Lopt::Controllers::Utils qw(
     get_success_message
     get_warning_message
     get_banned_method_message
+    get_unsecure_request_message
+    get_auth_error
+    authorize
 );
 
 use constant {
-    NO_USERS_BY_APP_ERR => "No users created by Lopt found."
+    NO_USERS_BY_APP_ERR => "No users created by Lopt found.",
 };
 
 prefix '/users' => sub {
     post '' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         my $user_model = Lopt::Model::User->new(from_json(request->body));
         if(!$user_model->check_validity()) {
@@ -42,6 +46,7 @@ prefix '/users' => sub {
 
     get '' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         my $users = Lopt::Service::UserRepository->new()->fetch();
         return $users if @{$users} > 0;
@@ -53,6 +58,7 @@ prefix '/users' => sub {
 
     del '/:username' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         my $username = params->{username};
         my $posted_data = from_json(request->body);
@@ -70,6 +76,10 @@ prefix '/users' => sub {
         warning(get_warning_message(request));
         status 400;
         return Lopt::Model::Exception->new(400, $repository->error_message())->get_hash();
+    };
+
+    post '/login' => sub {
+        # TODO
     };
 
     # ban methods on /users

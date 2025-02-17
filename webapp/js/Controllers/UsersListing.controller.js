@@ -25,6 +25,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
 
             $.ajax({
                 type: "DELETE",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + USERS_PATH + "/" + user.username,
                 data: JSON.stringify({ delete_home: modelObj.getShouldDeleteHome() }),
                 success: function (result) {
@@ -82,6 +83,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + USERS_PATH,
                 success: function (result) {
                     thisController.passModel(new UsersListingObjectModel({ users: result }));
@@ -96,6 +98,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {

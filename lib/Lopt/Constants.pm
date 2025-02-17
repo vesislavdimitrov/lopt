@@ -42,8 +42,8 @@ our $SHADOW_PATH = '/etc/shadow';
 our $MONGO_URL = 'mongodb://127.0.0.1:27017';
 our $MONGO_DB_NAME = 'taskexecutor';
 our $MONGO_TASKS_COLLECTION_NAME = 'tasks';
-our $MONGO_LAST_TASK_COLLECTION_NAME = 'lasttasks';
-our $MONGO_RUNNING_TASK_COLLECTION_NAME = 'runningtask';
+our $MONGO_LAST_TASK_COLLECTION_NAME = 'last_execution';
+our $MONGO_RUNNING_TASK_COLLECTION_NAME = 'running_execution';
 
 our $WORKSPACE_DIR = '/WORKSPACE';
 

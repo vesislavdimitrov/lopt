@@ -13,6 +13,8 @@ use Lopt::Controllers::Utils qw(
     get_warning_message
     get_banned_method_message
     get_success_message
+    get_auth_error
+    authorize
 );
 
 use constant {
@@ -24,6 +26,7 @@ use constant {
 prefix '/analysis' => sub {
     post '' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         my $log = body_parameters->get('log');
         if (!$log) {
@@ -53,6 +56,7 @@ prefix '/analysis' => sub {
 
     post '/stop' => sub {
         debug(get_debug_message(request));
+        return get_auth_error(request) if !authorize(request);
 
         if (!Lopt::Execution::Llama::terminate_llama_cli_instances()) {
             status 500;

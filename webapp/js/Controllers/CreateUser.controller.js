@@ -29,6 +29,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const userToSend = modelObj.getUser();
             $.ajax({
                 type: "POST",
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + USERS_PATH,
                 data: JSON.stringify(userToSend),
                 success: function (result) {
@@ -82,6 +83,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {

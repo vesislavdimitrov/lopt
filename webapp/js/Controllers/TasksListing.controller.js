@@ -19,6 +19,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
 
             $.ajax({
                 type: "DELETE",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + TASKS_PATH + "/" + task.id,
                 success: function (result) {
                     if (deleteTaskDialog.isBusy()) {
@@ -78,6 +79,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
 
             $.ajax({
                 type: "POST",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + RUNNING_TASK_STATUS_PATH + "/" + task.id,
                 data: JSON.stringify({ password: password }),
                 dataType: "json",
@@ -152,6 +154,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + TASKS_PATH,
                 success: function (result) {
                     thisController.passModel(new TasksListingObjectModel({ tasks: result }));
@@ -166,6 +169,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
+                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {

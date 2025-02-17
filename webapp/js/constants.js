@@ -8,6 +8,7 @@ const STOP_TASK_PATH = "/tasks/executions/stop";
 const USERS_PATH = "/users";
 const UPLOAD_PATH = "/upload";
 const ANALYSIS_PATH = "/analysis";
+const BASIC_AUTH_PREFIX = "Basic ";
 
 const ONGOING_TASK_POLL_INTERVAL = 2000;
 const TASK_STATES = {
