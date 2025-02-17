@@ -10,7 +10,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "DELETE",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + LAST_TASK_LOG_PATH,
                 complete: function () {
                     thisController.continueToLaunchpad();
@@ -73,7 +73,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + ONGOING_TASK_LOG_PATH,
                 data: {},
                 dataType: "json",
@@ -100,7 +100,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + LAST_TASK_LOG_PATH,
                 data: {},
                 dataType: "json",
@@ -126,7 +126,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + RUNNING_TASK_STATUS_PATH,
                 success: function (result) {
                     if (result.running_task_status > -1) {
@@ -148,7 +148,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "POST",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + requestPath,
                 success: function (result) {
                     if (requestPath === STOP_TASK_PATH) {
@@ -168,7 +168,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
         analyzeLog: function (logContent, callback) {
             $.ajax({
                 method: "POST",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + ANALYSIS_PATH,
                 contentType: "application/json",
                 data: JSON.stringify({ log: logContent }),
@@ -186,7 +186,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
         cancelAnalysis: function () {
             $.ajax({
                 method: "POST",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + ANALYSIS_PATH + "/stop",
                 contentType: "application/json"
             });

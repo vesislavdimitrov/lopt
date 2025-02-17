@@ -14,7 +14,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
 
             $.ajax({
                 type: "DELETE",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + TASKS_PATH + "/" + taskId,
                 success: function (result) {
                     thisController.returnToTasksListing();
@@ -77,7 +77,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
 
             $.ajax({
                 type: "POST",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + RUNNING_TASK_STATUS_PATH + "/" + taskId,
                 data: JSON.stringify({ password: password }),
                 dataType: "json",
@@ -130,7 +130,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + TASKS_PATH + "/" + taskId,
                 success: function (result) {
                     thisController.passModel(new TaskObjectModel(result));
@@ -145,7 +145,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "GET",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + "/",
                 success: function (result) {
                     if (result.message != "Lopt is available") {

@@ -26,7 +26,7 @@ sap.ui.define(["./BaseController"], function (BaseController) {
             const thisController = this;
             $.ajax({
                 type: "POST",
-                headers: { "Authorization": "Basic " + jQuery.sap.storage.get('token') },
+                headers: { "Authorization": BASIC_AUTH_PREFIX + jQuery.sap.storage.get('token') },
                 url: CONFIG.API_BASE_URL + UPLOAD_PATH,
                 data: oFormData,
                 enctype: 'multipart/form-data',
