@@ -32,7 +32,7 @@ sap.ui.jsview(LOPT_VIEW_LAUNCHPAD, {
 
     createDialog: function (oPage, oController) {
         return new sap.m.Dialog("passwordDialog", {
-            title: "Enter the application user password",
+            title: "Enter the server's superuser password",
             type: sap.m.DialogType.Message,
             content: this.createPasswordInput(),
             beginButton: this.createLoginButton(oPage, oController),
@@ -56,13 +56,17 @@ sap.ui.jsview(LOPT_VIEW_LAUNCHPAD, {
             type: sap.m.ButtonType.Emphasized,
             press: function () {
                 const password = sap.ui.getCore().byId("passwordInput").getValue();
-                if (!thisController.logIn(password)) {
-                    sap.ui.getCore().byId("passwordErrorMessage").setVisible(true);
-                    return;
-                }
-                oPage.setVisible(true);
-                sap.ui.getCore().byId("passwordDialog").close();
-                oController.pageLoaded();
+                
+                thisController.logIn(password, function(result) {
+                    if (!result) {
+                        sap.ui.getCore().byId("passwordInput").setValue();
+                        sap.ui.getCore().byId("passwordErrorMessage").setVisible(true);
+                        return;
+                    }
+                    oPage.setVisible(true);
+                    sap.ui.getCore().byId("passwordDialog").close();
+                    oController.pageLoaded();
+                });
             }
         });
     },

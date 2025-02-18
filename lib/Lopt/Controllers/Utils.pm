@@ -4,6 +4,7 @@ package Lopt::Controllers::Utils;
 use strict;
 use warnings;
 
+use MIME::Base64;
 use Lopt::Validation qw(authenticate_user has_basic_auth);
 
 use parent qw(Exporter);
@@ -16,6 +17,7 @@ our @EXPORT_OK=qw(
     get_unsecure_request_message
     get_auth_error
     authorize
+    encode
 );
 
 sub authorize {
@@ -24,6 +26,11 @@ sub authorize {
     
     return 0 if !has_basic_auth($auth_header) || !authenticate_user((split ' ', $auth_header)[1]);
     return 1;
+}
+
+sub encode {
+    my ($string) = @_;
+    return encode_base64($string, '');
 }
 
 sub get_auth_error {

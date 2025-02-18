@@ -6,3 +6,4 @@ export RED='\033[0;31m'
 export EXIT_CODE_FAILURE=1
 export EXIT_CODE_SUCCESS=0
 export LOCAL_URL="localhost:5000"
+export USER=$(whoami)

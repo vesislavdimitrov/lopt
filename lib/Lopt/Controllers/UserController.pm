@@ -1,6 +1,7 @@
 package Lopt::Controllers::UserController;
 
 use Dancer2 appname => 'Lopt';
+use POSIX qw(getpwuid);
 use Lopt::Model::User;
 use Lopt::Model::UserDeletion;
 use Lopt::Model::Exception;
@@ -14,10 +15,13 @@ use Lopt::Controllers::Utils qw(
     get_unsecure_request_message
     get_auth_error
     authorize
+    encode
 );
 
 use constant {
     NO_USERS_BY_APP_ERR => "No users created by Lopt found.",
+    MISSING_CREDENTIALS_ERR => "Missing credentials",
+    INVALID_CREDENTIALS_ERR => "Invalid superuser credentials"
 };
 
 prefix '/users' => sub {
@@ -79,7 +83,26 @@ prefix '/users' => sub {
     };
 
     post '/login' => sub {
-        # TODO
+        debug(get_debug_message(request));
+
+        my $password = from_json(request->body)->{password} // '';
+        if (!$password) {
+            warning(get_warning_message(request));
+            status 400;
+            return Lopt::Model::Exception->new(400, MISSING_CREDENTIALS_ERR)->get_hash();
+        }
+
+        my $user = getpwuid($<);
+        my $token = encode("$user:$password");
+        if (!authenticate_user($token)) {
+            warning(get_warning_message(request));
+            status 401;
+            return Lopt::Model::Exception->new(401, INVALID_CREDENTIALS_ERR)->get_hash();
+        }
+
+        status 200;
+        debug(get_success_message(request));
+        return { token => $token };
     };
 
     # ban methods on /users

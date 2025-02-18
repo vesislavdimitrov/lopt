@@ -12,6 +12,7 @@ use constant {
     PASSWORD_CREATION_ERR => "Error when creating user: cannot add a password to the user and the command exited with code ",
     USER_NOT_FOUND_ERR => "Cannot delete user: user not found.",
     NON_LOPT_USER_ERR => "Cannot delete user: user not created by Lopt.",
+    DB_DELETION_ERR => "Could not remove user from database.",
     GENERIC_DELETION_ERR => "Cannot delete user: an error has occurred and the command exited with code ",
 
     USER_ADD_CMD => 'useradd'
@@ -21,7 +22,7 @@ sub new {
     my ($class, $user, $username) = @_;
     my $self = {
         user => $user,
-        persister => Lopt::Persistence::Persister->new(),
+        persister => Lopt::Persistence::MongoPersister->new(),
         error_message => undef,
         username => $username
     };
@@ -76,7 +77,7 @@ sub create {
     `echo '$username:$password' | chpasswd`;
     die PASSWORD_CREATION_ERR . $? >> 8 . '.' if $? >> 8;
 
-    $self->persister()->write_user_home($username);
+    $self->persister()->save_user($username);
     return 1;
 }
 
@@ -88,25 +89,33 @@ sub fetch {
 sub delete {
     my ($self) = @_;
     my $username = $self->username();
+    my $persister = $self->persister();
+
     if(!defined getpwnam($username)) {
         $self->set_error_message(USER_NOT_FOUND_ERR);
         return 0;
     }
 
-    my $all_users = $self->persister()->get_users();
+    my $all_users = $persister->get_users();
     my $escaped_username = quotemeta($username);
     if(!grep($_->{username} =~ /\A$escaped_username\z/, @{$all_users})) {
         $self->set_error_message(NON_LOPT_USER_ERR);
         return 0;
     }
+
+    if(!$persister->delete_user($username)){
+        die DB_DELETION_ERR;
+    }
+
     my @command = ('userdel');
-    push @command, ('-r', '-f') if $self->user()->{'delete_home'};
+    push @command, ('-r', '-f') if $self->user()->{delete_home};
     push @command, $username;
     system(@command);
 
     my $exit_code = $? >> 8;
-    return 1 if $exit_code == 0;
-    die GENERIC_DELETION_ERR . $? >> 8 . '.';
+    die GENERIC_DELETION_ERR . $? >> 8 . '.' if $exit_code != 0;
+
+    return 1;
 }
 
 1;

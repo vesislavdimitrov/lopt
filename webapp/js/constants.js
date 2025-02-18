@@ -6,6 +6,7 @@ const PAUSE_TASK_PATH = "/tasks/executions/pause";
 const RESUME_TASK_PATH = "/tasks/executions/resume";
 const STOP_TASK_PATH = "/tasks/executions/stop";
 const USERS_PATH = "/users";
+const LOGIN_PATH = "/users/login";
 const UPLOAD_PATH = "/upload";
 const ANALYSIS_PATH = "/analysis";
 const BASIC_AUTH_PREFIX = "Basic ";

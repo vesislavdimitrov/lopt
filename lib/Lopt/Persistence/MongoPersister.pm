@@ -12,6 +12,7 @@ use Lopt::Constants qw(
     $MONGO_TASKS_COLLECTION_NAME
     $MONGO_LAST_TASK_COLLECTION_NAME
     $MONGO_RUNNING_TASK_COLLECTION_NAME
+    $MONGO_USERS_COLLECTION
     $TASK_DATA_DELIMITER
     $NO_RUNNING_PROCESS
     $PROCESS_STOPPED_STATE
@@ -67,6 +68,31 @@ sub delete_task {
 
     my $result = $self->_get_tasks_collection()->delete_one(
         { id => $task_id }
+    );
+    return undef if not $result->deleted_count > 0;
+    return 1;
+}
+
+sub save_user {
+    my ($self, $username) = @_;
+    $self->_get_users_collection()->insert_one({username => $username});
+    return 1;
+}
+
+sub get_users {
+    my ($self) = @_;
+    my $users_cursor = $self->_get_users_collection()->find();
+    my @users = $users_cursor->all();
+
+    @users = map { $self->_remove_mongo_id($_) } @users;
+    return \@users;
+}
+
+sub delete_user {
+    my ($self, $username) = @_;
+
+    my $result = $self->_get_users_collection()->delete_one(
+        { username => $username }
     );
     return undef if not $result->deleted_count > 0;
     return 1;
@@ -146,6 +172,13 @@ sub _get_last_task_collection {
     $mongo_client ||= _initialize_mongo_client();
     my $db = $mongo_client->get_database($MONGO_DB_NAME);
     return $db->get_collection($MONGO_LAST_TASK_COLLECTION_NAME);
+}
+
+sub _get_users_collection {
+    my ($self) = @_;
+    $mongo_client ||= _initialize_mongo_client();
+    my $db = $mongo_client->get_database($MONGO_DB_NAME);
+    return $db->get_collection($MONGO_USERS_COLLECTION);
 }
 
 sub _initialize_mongo_client {

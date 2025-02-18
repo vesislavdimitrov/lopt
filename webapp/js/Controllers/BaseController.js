@@ -90,12 +90,24 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
             }
         },
 
-        logIn: function(password) {
-            if (password === "Abcd1234") { // TODO Server side
-                jQuery.sap.storage.put('token', btoa("root" + ":" + password));
-                return true;
-            }
-            return false;
+        logIn: function(password, callback) {
+            $.ajax({
+                url: CONFIG.API_BASE_URL + LOGIN_PATH,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ password: password }),
+                success: function(response) {
+                    if (response.token) {
+                        jQuery.sap.storage.put('token', response.token);
+                        callback(true);
+                        return;
+                    }
+                    callback(false);
+                },
+                error: function(xhr, status, error) {
+                    callback(false);
+                }
+            });
         },
 
         isLoggedIn: function () {
