@@ -93,7 +93,8 @@ sub _build_command {
 }
 
 sub _build_prompt {
-    my ($self, $prompt) = @_;        
+    my ($self, $prompt) = @_;
+    $prompt =~ s/"//g;
     return sprintf(SYSTEM_PROMT, $prompt);
 }
 
