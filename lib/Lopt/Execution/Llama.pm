@@ -110,7 +110,7 @@ sub terminate_llama_cli_instances {
     chomp(@pids);
     return 1 unless @pids;
 
-    my $max_pid = (sort { $b <=> $a } @pids)[0];    
+    my $max_pid = (sort { $b <=> $a } @pids)[0];
     eval { kill 9, $max_pid if $max_pid =~ /^\d+$/; };
     return 0 if $@;
     return 1;

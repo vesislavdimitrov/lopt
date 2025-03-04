@@ -2,6 +2,7 @@ package Lopt::Service::UserRepository;
 
 use Dancer2 appname => 'Lopt';
 use Lopt::Persistence::Persister;
+use POSIX qw(getpwnam);
 
 use parent qw(Lopt::Service::Repository);
 
@@ -83,7 +84,15 @@ sub create {
 
 sub fetch {
     my ($self) = @_;
-    return $self->persister()->get_users();
+    my $users = $self->persister()->get_users();
+
+    @$users = map {
+        my $uid = getpwnam($_->{username});
+        $_->{uid} = defined $uid ? $uid : undef;
+        $_;
+    } @$users;
+
+    return $users;
 }
 
 sub delete {

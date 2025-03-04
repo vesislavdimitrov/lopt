@@ -33,7 +33,7 @@ sap.ui.jsview(LOPT_VIEW_TASK_DETAILS, {
         });
         taskDetailsFilter.setKey("taskDetails");
         const taskActionsFilter = new sap.m.IconTabFilter("taskActionsFilter", {
-            icon: "sap-icon://action"
+            icon: "sap-icon://overflow"
         });
         taskActionsFilter.setKey("taskActions");
         this.createTaskActionButtons(taskActionsFilter);
